@@ -1,118 +1,92 @@
 [
-    {
-        "profile_id": "USR-001",
-        "name": "Linh",
-        "age": 24,
-        "gender": "female",
-        "location": "Ho Chi Minh City",
-        "interests": [
-            "leo núi",
-            "đọc sách sci-fi",
-            "cà phê cuối tuần",
-            "chạy bộ"
-        ],
-        "mbti": "INTJ",
-        "personal_traits": [
-            "early_bird",
-            "dog_lover",
-            "fitness_enthusiast"
-        ],
-        "dealbreakers": [
-            "smokes",
-            "arrogant"
-        ]
-    },
-    {
-        "profile_id": "USR-002",
-        "name": "Mai",
-        "age": 25,
-        "gender": "female",
-        "location": "Ho Chi Minh City",
-        "interests": [
-            "nấu ăn",
-            "đọc sách sci-fi",
-            "xem phim nghệ thuật",
-            "cắm hoa"
-        ],
-        "mbti": "ENFP",
-        "personal_traits": [
-            "smokes",
-            "extrovert",
-            "cat_lover",
-            "night_owl"
-        ],
-        "dealbreakers": [
-            "dislikes_pets",
-            "controlling"
-        ]
-    },
-    {
-        "profile_id": "USR-003",
-        "name": "Hoàng",
-        "age": 26,
-        "gender": "male",
-        "location": "Ha Noi",
-        "interests": [
-            "tập gym",
-            "xem UFC",
-            "công nghệ",
-            "code dạo"
-        ],
-        "mbti": "ISTP",
-        "personal_traits": [
-            "fitness_enthusiast",
-            "tech_savvy",
-            "non_smoker"
-        ],
-        "dealbreakers": [
-            "smokes",
-            "lazy",
-            "dislikes_sports"
-        ]
-    },
-    {
-        "profile_id": "USR-004",
-        "name": "Trang",
-        "age": 22,
-        "gender": "female",
-        "location": "Ho Chi Minh City",
-        "interests": [
-            "du lịch bụi",
-            "chụp ảnh phim",
-            "nuôi bò sát",
-            "nhảy dù"
-        ],
-        "mbti": "ISFP",
-        "personal_traits": [
-            "exotic_pet_owner",
-            "adventurous",
-            "non_smoker"
-        ],
-        "dealbreakers": [
-            "homebody",
-            "traditional"
-        ]
-    },
-    {
-        "profile_id": "USR-005",
-        "name": "Khánh",
-        "age": 27,
-        "gender": "male",
-        "location": "Da Nang",
-        "interests": [
-            "đầu tư tài chính",
-            "chơi golf",
-            "rượu vang",
-            "nghe nhạc jazz"
-        ],
-        "mbti": "ENTJ",
-        "personal_traits": [
-            "ambitious",
-            "smokes",
-            "workaholic"
-        ],
-        "dealbreakers": [
-            "lack_of_ambition"
-        ]
-    }
+  {
+    "profile_id": "USR-001",
+    "name": "Linh",
+    "age": 24,
+    "gender": "female",
+    "location": "Ho Chi Minh City",
+    "interests": ["leo núi", "đọc sách sci-fi", "cà phê cuối tuần", "chạy bộ"],
+    "mbti": "INTJ",
+    "personal_traits": ["early_bird", "dog_lover", "fitness_enthusiast", "non_smoker"],
+    "dealbreakers": ["smokes", "arrogant", "controlling"],
+    "relationship_goal": "nghiêm túc",
+    "communication_style": "trực tiếp, thích nói chuyện có chiều sâu",
+    "preferred_date_style": ["cà phê yên tĩnh", "đi bộ", "nhà sách"],
+    "budget_preference": "trung bình",
+    "availability": ["tối thứ bảy", "sáng chủ nhật"],
+    "green_flags": ["tôn trọng ranh giới", "ham học hỏi", "duy trì thói quen lành mạnh"],
+    "red_flags": []
+  },
+  {
+    "profile_id": "USR-002",
+    "name": "Mai",
+    "age": 25,
+    "gender": "female",
+    "location": "Ho Chi Minh City",
+    "interests": ["nấu ăn", "đọc sách sci-fi", "xem phim nghệ thuật", "cắm hoa"],
+    "mbti": "ENFP",
+    "personal_traits": ["smokes", "extrovert", "cat_lover", "night_owl"],
+    "dealbreakers": ["dislikes_pets", "controlling"],
+    "relationship_goal": "tìm hiểu vui vẻ",
+    "communication_style": "hài hước, thích nhắn tin thường xuyên",
+    "preferred_date_style": ["workshop nấu ăn", "rạp phim nghệ thuật", "quán ăn mới"],
+    "budget_preference": "trung bình",
+    "availability": ["tối thứ sáu", "tối chủ nhật"],
+    "green_flags": ["cởi mở", "biết tạo năng lượng tích cực"],
+    "red_flags": ["hút thuốc"]
+  },
+  {
+    "profile_id": "USR-003",
+    "name": "Hoàng",
+    "age": 26,
+    "gender": "male",
+    "location": "Ha Noi",
+    "interests": ["tập gym", "xem UFC", "công nghệ", "code dạo"],
+    "mbti": "ISTP",
+    "personal_traits": ["fitness_enthusiast", "tech_savvy", "non_smoker", "practical"],
+    "dealbreakers": ["smokes", "lazy", "dislikes_sports"],
+    "relationship_goal": "nghiêm túc",
+    "communication_style": "ngắn gọn, thiên về hành động hơn lời nói",
+    "preferred_date_style": ["đi bộ", "trải nghiệm công nghệ", "cafe yên tĩnh"],
+    "budget_preference": "trung bình",
+    "availability": ["tối thứ bảy"],
+    "green_flags": ["ổn định", "kỷ luật", "tôn trọng cam kết"],
+    "red_flags": []
+  },
+  {
+    "profile_id": "USR-004",
+    "name": "Trang",
+    "age": 22,
+    "gender": "female",
+    "location": "Ho Chi Minh City",
+    "interests": ["du lịch bụi", "chụp ảnh phim", "nuôi bò sát", "nhảy dù"],
+    "mbti": "ISFP",
+    "personal_traits": ["exotic_pet_owner", "adventurous", "non_smoker", "spontaneous"],
+    "dealbreakers": ["homebody", "traditional"],
+    "relationship_goal": "tìm hiểu lâu dài nhưng không vội",
+    "communication_style": "tự nhiên, thích sự dí dỏm và chân thành",
+    "preferred_date_style": ["hoạt động ngoài trời", "triển lãm ảnh", "trải nghiệm mới"],
+    "budget_preference": "trung bình",
+    "availability": ["chiều thứ bảy", "chủ nhật"],
+    "green_flags": ["can đảm", "sáng tạo", "tôn trọng khác biệt"],
+    "red_flags": []
+  },
+  {
+    "profile_id": "USR-005",
+    "name": "Khánh",
+    "age": 27,
+    "gender": "male",
+    "location": "Da Nang",
+    "interests": ["đầu tư tài chính", "chơi golf", "rượu vang", "nghe nhạc jazz"],
+    "mbti": "ENTJ",
+    "personal_traits": ["ambitious", "smokes", "workaholic"],
+    "dealbreakers": ["lack_of_ambition"],
+    "relationship_goal": "nghiêm túc",
+    "communication_style": "thẳng thắn, thích người có mục tiêu rõ",
+    "preferred_date_style": ["wine bar", "sân tập golf", "đêm nhạc jazz"],
+    "budget_preference": "cao",
+    "availability": ["tối thứ bảy"],
+    "green_flags": ["tham vọng", "chủ động", "biết lập kế hoạch"],
+    "red_flags": ["hút thuốc", "quá tập trung công việc"]
+  }
 ]

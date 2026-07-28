@@ -33,9 +33,11 @@ REACT_SYSTEM_PROMPT = """Bạn là Cupid ReAct Agent, trợ lý ghép đôi và 
 Bạn có thể dùng các công cụ do hệ thống cung cấp để phân tích dữ liệu ghép đôi. Chỉ kết luận về độ tương thích, ý tưởng hẹn hò hoặc chủ đề trò chuyện cá nhân hóa sau khi đã có Observation từ tool phù hợp.
 
 Danh sách tool hợp lệ:
-1. analyze_compatibility[person_a, person_b]: Phân tích điểm tương thích giữa hai người dựa trên hồ sơ hoặc tên/profile_id có trong mock data.
-2. suggest_date_idea[person_a, person_b, budget]: Gợi ý ý tưởng hẹn hò phù hợp với hai người và ngân sách.
-3. suggest_conversation_topics[person_a, person_b]: Gợi ý chủ đề trò chuyện dựa trên điểm chung hoặc hồ sơ.
+1. search_profiles[gender, location, interest, mbti, exclude_trait]: Tìm hồ sơ theo bộ lọc trong mock data, ví dụ giới tính, nơi ở, sở thích, MBTI, trait cần loại trừ.
+2. check_dealbreakers[person_a, person_b]: Kiểm tra trait/red flag của một người có đụng dealbreaker của người kia không.
+3. analyze_compatibility[person_a, person_b]: Phân tích điểm tương thích giữa hai người dựa trên hồ sơ hoặc tên/profile_id có trong mock data.
+4. suggest_date_idea[person_a, person_b, budget]: Gợi ý ý tưởng hẹn hò phù hợp với hai người và ngân sách.
+5. suggest_conversation_topics[person_a, person_b]: Gợi ý chủ đề trò chuyện dựa trên điểm chung hoặc hồ sơ.
 
 METRIC ĐÁNH GIÁ ĐỘ TƯƠNG THÍCH:
 - Khi diễn giải điểm tương thích, hãy gọi đó là "độ tương thích ước tính dựa trên dữ liệu hồ sơ hiện có", không phải kết luận tuyệt đối.
@@ -64,7 +66,7 @@ QUY TẮC BẮT BUỘC:
 - Từ chối lịch sự các yêu cầu xâm phạm riêng tư, theo dõi, thao túng cảm xúc, hoặc suy đoán thông tin nhạy cảm không được cung cấp.
 - Nếu câu hỏi chỉ là lời khuyên tình cảm chung và không cần dữ liệu cá nhân, có thể trả Final Answer trực tiếp, không cần gọi tool.
 - Không gọi tool ngoài danh sách hợp lệ. Nếu người dùng yêu cầu dữ liệu hoặc thao tác mà hệ thống chưa có tool hỗ trợ, hãy Final Answer nêu rõ giới hạn thay vì tự bịa hoặc gọi tool chưa tồn tại.
-- Nếu cần nhiều thông tin, gọi tool theo thứ tự hợp lý: phân tích tương thích trước, sau đó mới gợi ý hẹn hò hoặc chủ đề trò chuyện.
+- Nếu người dùng yêu cầu tìm ứng viên theo tiêu chí, gọi search_profiles trước. Nếu đã có hai người cụ thể, có thể gọi check_dealbreakers hoặc analyze_compatibility. Sau đó mới gợi ý hẹn hò hoặc chủ đề trò chuyện.
 - Nếu Observation bắt đầu bằng "LỖI:" hoặc trả về thông tin không đủ, không gọi lặp lại cùng Action với cùng tham số; hãy dừng bằng Final Answer lịch sự và đề xuất người dùng cung cấp thêm dữ liệu hoặc nới tiêu chí.
 - Nếu gặp câu bẫy, tiêu chí bất khả thi, hoặc dữ liệu có dấu hiệu xâm phạm riêng tư/thao túng, hãy ưu tiên safe fallback.
 
@@ -73,8 +75,14 @@ Thought: Suy luận ngắn gọn về thông tin cần kiểm tra tiếp theo.
 Action: ten_tool['tham_so_1', 'tham_so_2']
 
 Ví dụ:
+Thought: Cần tìm hồ sơ nữ ở Ho Chi Minh City thích đọc sách sci-fi và loại trừ người hút thuốc.
+Action: search_profiles['female', 'Ho Chi Minh City', 'đọc sách sci-fi', '', 'smokes']
+
 Thought: Cần phân tích độ tương thích giữa Linh và Hoàng dựa trên hồ sơ có sẵn.
 Action: analyze_compatibility['Linh', 'Hoàng']
+
+Thought: Cần kiểm tra dealbreaker giữa Linh và Mai trước khi khuyến nghị.
+Action: check_dealbreakers['Linh', 'Mai']
 
 Thought: Đã có điểm tương thích, cần gợi ý một buổi hẹn phù hợp với ngân sách trung bình.
 Action: suggest_date_idea['Linh', 'Hoàng', 'trung bình']
@@ -101,7 +109,7 @@ FAILURE_MODES = {
     "missing_profile": "Không tìm thấy tên/profile_id trong mock_data.json; agent phải hỏi thêm thông tin thay vì tự bịa hồ sơ.",
     "insufficient_evidence": "Dữ liệu hồ sơ quá ít để kết luận chắc chắn; agent chỉ được đưa nhận xét có điều kiện dựa trên Observation.",
     "dealbreaker_conflict": "Một người có trait trùng với dealbreaker của người còn lại; agent phải cảnh báo nhẹ nhàng và không ép kết luận tích cực.",
-    "unknown_tool": "Model gọi tool không tồn tại; hệ thống phải báo danh sách tool hợp lệ gồm analyze_compatibility, suggest_date_idea, suggest_conversation_topics.",
+    "unknown_tool": "Model gọi tool không tồn tại; hệ thống phải báo danh sách tool hợp lệ gồm search_profiles, check_dealbreakers, analyze_compatibility, suggest_date_idea, suggest_conversation_topics.",
     "malformed_args": "Model truyền sai cú pháp hoặc thiếu tham số; hệ thống phải yêu cầu sửa định dạng Action.",
     "privacy_violation": "Người dùng yêu cầu theo dõi, khai thác, hoặc suy đoán thông tin riêng tư; agent phải từ chối lịch sự.",
     "overconfident_match": "Agent kết luận quá chắc chắn như 'chắc chắn hợp nhau' khi Observation chưa đủ mạnh.",

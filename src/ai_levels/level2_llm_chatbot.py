@@ -1,22 +1,33 @@
 """
-🤖 CẤP ĐỘ 2: LLM CHATBOT (Baseline Chatbot không có Tool)
-Dùng LLM sinh câu trả lời tự nhiên mượt mà, nhưng không thể truy cập dữ liệu thời gian thực.
+CẤP ĐỘ 2: LLM CHATBOT
+Chatbot baseline tư vấn tình cảm chung, không gọi tool và không tra hồ sơ.
 """
 
-CHATBOT_BASELINE_PROMPT = """Bạn là một Chatbot tư vấn thông thường.
-Hãy trả lời câu hỏi của người dùng một cách thân thiện dựa trên kiến thức có sẵn.
-Nếu không biết thông tin thực tế thời gian thực, hãy thông báo lịch sự cho người dùng.
-"""
+import sys
+
+if sys.stdout.encoding != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
+
+CHATBOT_BASELINE_PROMPT = """Bạn là Cupid Chatbot. Hãy tư vấn giao tiếp/hẹn hò ở mức chung,
+không giả vờ đã tra hồ sơ hoặc tính điểm tương thích."""
+
 
 def llm_chatbot(user_input: str) -> str:
     text = user_input.lower()
-    if "thời tiết" in text or "vé máy bay" in text:
-        return "🤖 [LLM Chatbot]: Tôi là AI hội thoại nhưng không được cấp công cụ tra cứu dữ liệu thời gian thực, nên tôi không biết chính xác thời tiết/giá vé hôm nay!"
-    else:
-        return f"🤖 [LLM Chatbot]: Rất vui được hỗ trợ bạn về câu hỏi '{user_input}'!"
+    if "tìm" in text or "tương thích" in text or "hồ sơ" in text or "hợp nhau" in text:
+        return (
+            "🤖 [Cupid Chatbot]: Tôi chưa có quyền gọi tool tra hồ sơ, nên không thể kết luận có căn cứ. "
+            "Bạn nên dùng Cupid ReAct Agent cho yêu cầu này."
+        )
+    return f"🤖 [Cupid Chatbot]: Đây là lời khuyên chung cho câu hỏi: '{user_input}'."
+
 
 if __name__ == "__main__":
-    print("=== DEMO CẤP ĐỘ 2: LLM CHATBOT BASELINE ===")
-    q = "Thời tiết Hà Nội hôm nay thế nào?"
+    print("=== DEMO CẤP ĐỘ 2: CUPID CHATBOT BASELINE ===")
+    q = "Linh và Hoàng có hợp nhau không?"
     print(f"User: {q}")
     print(f"Bot : {llm_chatbot(q)}")
