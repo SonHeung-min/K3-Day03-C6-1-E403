@@ -7,13 +7,14 @@ ReAct Agent biết tra cứu, quan sát kết quả và không bịa hồ sơ.
 """
 
 import json
+import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
 def _normalize_text(value: Any) -> str:
     """Chuẩn hóa chuỗi để so khớp mềm."""
-    return str(value or "").strip().lower()
+    return unicodedata.normalize("NFC", str(value or "").strip().lower())
 
 
 def _load_mock_profiles() -> List[Dict[str, Any]]:
