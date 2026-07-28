@@ -314,6 +314,34 @@ def suggest_conversation_topics(person_a: str, person_b: str) -> str:
     return _json({"topics": topics[:5], "tone": "tự nhiên, tôn trọng, ít áp lực"})
 
 
+def suggest_date_idea(person_a: str, person_b: str, budget: str = "trung bình") -> str:
+    """
+    Gợi ý ý tưởng hẹn hò dựa trên hai hồ sơ và mức ngân sách.
+    """
+    profile_a = _resolve_profile(person_a)
+    profile_b = _resolve_profile(person_b)
+    if not profile_a or not profile_b:
+        return "ERROR: Không tìm thấy đủ hồ sơ để gợi ý buổi hẹn."
+
+    shared_styles = sorted(set(profile_a.get("preferred_date_style", [])) & set(profile_b.get("preferred_date_style", [])))
+    shared_interests = sorted(set(profile_a.get("interests", [])) & set(profile_b.get("interests", [])))
+
+    if shared_styles:
+        idea = f"một buổi {shared_styles[0]}"
+    elif shared_interests:
+        idea = f"một cuộc trò chuyện nhẹ nhàng xoay quanh {shared_interests[0]}"
+    else:
+        idea = "một buổi cà phê áp lực thấp để tìm hiểu kỳ vọng của nhau"
+
+    return _json(
+        {
+            "idea": idea,
+            "budget": budget or "trung bình",
+            "why": "Gợi ý dựa trên preferred_date_style và sở thích chung của hai hồ sơ.",
+        }
+    )
+
+
 TOOL_SCHEMAS = {
     "search_profiles": {
         "description": "Tìm hồ sơ ứng viên theo bộ lọc có căn cứ từ mock_data.json.",
@@ -350,6 +378,15 @@ TOOL_SCHEMAS = {
         },
         "output": "JSON gồm topics và tone.",
     },
+    "suggest_date_idea": {
+        "description": "Gợi ý buổi hẹn dựa trên kiểu hẹn ưa thích, sở thích chung và ngân sách.",
+        "inputs": {
+            "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
+            "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
+            "budget": {"type": "str", "required": False, "examples": ["thấp", "trung bình", "cao"]},
+        },
+        "output": "JSON gồm idea, budget và why.",
+    },
 }
 
 
@@ -358,4 +395,5 @@ AVAILABLE_TOOLS = {
     "check_dealbreakers": check_dealbreakers,
     "analyze_compatibility": analyze_compatibility,
     "suggest_conversation_topics": suggest_conversation_topics,
+    "suggest_date_idea": suggest_date_idea,
 }
