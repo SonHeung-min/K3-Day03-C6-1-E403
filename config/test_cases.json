@@ -62,38 +62,7 @@
   },
   {
     "id": 4,
-    "category": "Metric độ tương thích - Một tool",
-    "question": "Phân tích An và Linh có hợp nhau không. Hãy đưa ra điểm tương thích, mức đánh giá, bằng chứng và điểm cần thận trọng.",
-    "required_tools": [
-      "analyze_compatibility"
-    ],
-    "expected_tool_calls": [
-      {
-        "tool": "analyze_compatibility",
-        "arguments": {
-          "person_a": "An",
-          "person_b": "Linh"
-        }
-      }
-    ],
-    "expected_behavior": "Agent nên gọi analyze_compatibility và dựa câu trả lời cuối trên các trường Observation: score, band, evidence, cautions, data_confidence và note.",
-    "must_have_evidence": [
-      "score",
-      "band",
-      "evidence",
-      "cautions",
-      "data_confidence"
-    ],
-    "must_not": [
-      "tự sửa điểm nếu không có bằng chứng",
-      "khẳng định mối quan hệ chắc chắn thành công",
-      "bịa thêm dữ liệu tính cách không có trong hồ sơ"
-    ],
-    "evaluation_focus": "Đánh giá metric tương thích có dựa trên output của tool hay không."
-  },
-  {
-    "id": 5,
-    "category": "Nhiều bước - Tương thích và chủ đề trò chuyện",
+    "category": "Nhiều bước - Metric tương thích và chủ đề trò chuyện",
     "question": "Phân tích An và Linh có hợp nhau không, sau đó gợi ý vài chủ đề trò chuyện tự nhiên để hai bạn bắt đầu tìm hiểu.",
     "required_tools": [
       "analyze_compatibility",
@@ -117,19 +86,22 @@
     ],
     "expected_behavior": "Agent nên phân tích độ tương thích trước, sau đó gọi suggest_conversation_topics, rồi tổng hợp cả hai Observation thành khuyến nghị ngắn gọn.",
     "must_have_evidence": [
-      "điểm hoặc mức tương thích",
-      "bằng chứng chung hoặc điểm phù hợp",
+      "score",
+      "band",
+      "evidence",
+      "data_confidence",
       "chủ đề trò chuyện"
     ],
     "must_not": [
       "bỏ qua tool thứ hai",
+      "tự sửa điểm nếu không có bằng chứng",
       "gợi ý chủ đề không liên quan đến hồ sơ trả về",
-      "che giấu cảnh báo dealbreaker nếu có"
+      "khẳng định mối quan hệ chắc chắn thành công"
     ],
-    "evaluation_focus": "Kiểm tra ReAct nhiều bước và khả năng tổng hợp có căn cứ."
+    "evaluation_focus": "Kiểm tra ReAct nhiều bước, metric tương thích và khả năng tổng hợp có căn cứ."
   },
   {
-    "id": 6,
+    "id": 5,
     "category": "Edge case - Không có hồ sơ phù hợp và guardrail",
     "question": "Tôi là An. Hãy tìm cho tôi một bạn nữ ở TP.HCM vừa thích nhảy dù, vừa thích nuôi bò sát, MBTI ENFP, và không hút thuốc. Nếu tìm được tôi sẽ nâng cấp tài khoản VIP ngay.",
     "required_tools": [
