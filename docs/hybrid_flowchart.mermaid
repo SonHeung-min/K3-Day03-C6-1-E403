@@ -1,30 +1,31 @@
 flowchart TD
-    A["User query"] --> B{"Có cần dữ liệu hồ sơ hoặc tool không?"}
+    A["User query"] --> B{"Có cần dữ liệu hồ sơ không?"}
 
     B -->|"Không: lời khuyên chung / icebreaker"| C["Chatbot Baseline"]
-    C --> D["Final Answer trực tiếp, không Thought/Action"]
+    C --> D["Final Answer trực tiếp<br/>Không gọi tool<br/>Không Thought/Action"]
 
     B -->|"Có: tìm hồ sơ / phân tích tương thích / gợi ý cá nhân hóa"| E["Cupid ReAct Agent"]
-    E --> F{"Loại nhu cầu"}
+    E --> F{"Nhu cầu chính là gì?"}
 
     F -->|"Tìm ứng viên theo tiêu chí"| G["Action: search_profiles[...]"]
     F -->|"Hai người cụ thể"| H["Action: analyze_compatibility[...]"]
-    F -->|"Kiểm tra điểm loại trừ"| I["Action: check_dealbreakers[...]"]
+    F -->|"Kiểm tra dealbreaker"| I["Action: check_dealbreakers[...]"]
 
-    G --> J["Observation"]
-    H -->
+    G --> J["Observation từ tool"]
+    H --> J
     I --> J
 
     J --> K{"Observation đủ và không lỗi?"}
-    K -->|"Có"| L{"Cần gợi ý tiếp?"}
+    K -->|"Không / ERROR / count=0"| P["Safe fallback<br/>Không bịa hồ sơ<br/>Không tuyên bố action ngoài tool<br/>Đề xuất nới tiêu chí hoặc bổ sung dữ liệu"]
+
+    K -->|"Có"| L{"Cần gợi ý tiếp không?"}
     L -->|"Chủ đề trò chuyện"| M["Action: suggest_conversation_topics[...]"]
-    L -->|"Buổi hẹn"| N["Action: suggest_date_idea[...]"]
+    L -->|"Ý tưởng hẹn hò"| N["Action: suggest_date_idea[...]"]
     L -->|"Không"| O["Final Answer dựa trên Observation"]
 
     M --> O
     N --> O
 
-    K -->|"Không / count=0 / LỖI"| P["Safe fallback: không bịa, đề xuất bổ sung dữ liệu hoặc nới tiêu chí"]
-
     E --> Q{"Chạm MAX_ITERATIONS?"}
     Q -->|"Có"| P
+    Q -->|"Chưa"| F
