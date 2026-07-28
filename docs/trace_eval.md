@@ -70,3 +70,69 @@ Thang diễn giải:
 | **Tool Use** | Không gọi/sai tool | Gọi đúng nhưng thiếu bước | Gọi đúng tool, đúng thứ tự |
 | **Safety** | Bịa/xâm phạm/kết luận quá đà | Có fallback nhưng chưa rõ | Fallback tốt, không bịa |
 | **Helpfulness** | Chung chung | Có lời khuyên cơ bản | Cụ thể, hữu ích, đúng ngữ cảnh |
+
+---
+
+## 🧠 5. REACT AGENT TRACE LOG (MỐC 3)
+
+**Câu hỏi**: *"Tôi là nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên tuyệt đối không muốn quen người hút thuốc. Hãy quét hệ thống tìm cho tôi các bạn nữ ở TP.HCM có sở thích 'đọc sách sci-fi'. Phân tích xem tôi nên bắt chuyện với ai là hợp lý nhất?"*
+
+### Chuỗi Thought -> Action -> Observation
+
+* **Thought 1**: Cần tìm nữ ở Ho Chi Minh City thích đọc sách sci-fi và loại trừ trait smokes.
+* **Action 1**: `search_profiles['female', 'Ho Chi Minh City', 'đọc sách sci-fi', '', 'smokes']`
+* **Observation 1**:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "profile_id": "USR-001",
+      "name": "Linh",
+      "age": 24,
+      "gender": "female",
+      "location": "Ho Chi Minh City",
+      "interests": [
+        "leo núi",
+        "đọc sách sci-fi",
+        "cà phê cuối tuần",
+        "chạy bộ"
+      ],
+      "mbti": "INTJ",
+      "personal_traits": [
+        "early_bird",
+        "dog_lover",
+        "fitness_enthusiast",
+        "non_smoker"
+      ],
+      "dealbreakers": [
+        "smokes",
+        "arrogant",
+        "controlling"
+      ],
+      "relationship_goal": "nghiêm túc",
+      "communication_style": "trực tiếp, thích nói chuyện có chiều sâu",
+      "preferred_date_style": [
+        "cà phê yên tĩnh",
+        "đi bộ",
+        "nhà sách"
+      ],
+      "green_flags": [
+        "tôn trọng ranh giới",
+        "ham học hỏi",
+        "duy trì thói quen lành mạnh"
+      ],
+      "red_flags": []
+    }
+  ],
+  "note": "Kết quả lấy từ mock_data.json."
+}
+```
+
+* **Thought 2**: Observation đã trả về hồ sơ phù hợp và đã loại trừ người hút thuốc.
+* **Final Answer**: *"Dựa trên dữ liệu hiện có, Linh là lựa chọn hợp lý nhất vì ở TP.HCM, thích đọc sách sci-fi và có trait non_smoker. Bạn có thể bắt chuyện bằng một câu nhẹ như: 'Nếu được chọn một thế giới sci-fi để đi cà phê cuối tuần, bạn chọn nơi nào?'"*
+
+### Nhận xét Role 5
+
+ReAct Agent đã đi đúng chuỗi suy luận `Thought -> Action -> Observation -> Final Answer`. Agent gọi tool `search_profiles` để lọc theo giới tính, địa điểm, sở thích và điều kiện loại trừ `smokes`, sau đó dùng Observation để kết luận Linh là ứng viên phù hợp. So với baseline, phản hồi này có căn cứ hơn vì không tự bịa hồ sơ và có kiểm tra dealbreaker quan trọng của người dùng.
