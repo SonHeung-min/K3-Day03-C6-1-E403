@@ -41,7 +41,7 @@ class GeminiProvider(BaseLLMProvider):
                 model=self.model_name,
                 contents=contents
             )
-            return response.text
+            return response.text or ""
         except Exception as e:
             return f"[Gemini Exception]: {str(e)}"
 

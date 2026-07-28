@@ -98,7 +98,7 @@ def run_react_agent(user_query: str, provider: BaseLLMProvider):
         print(f"\n--- 🔄 Vòng lặp ReAct (Step {step}/{MAX_ITERATIONS}) ---")
 
         # Gọi Provider với history
-        response = provider.generate(history, system_prompt=REACT_SYSTEM_PROMPT)
+        response = provider.generate(history, system_prompt=REACT_SYSTEM_PROMPT) or ""
         print(response)
 
         # Kiểm tra nếu Agent đã đưa ra câu trả lời cuối cùng
