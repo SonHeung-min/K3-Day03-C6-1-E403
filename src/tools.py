@@ -375,7 +375,7 @@ def suggest_date_idea(person_a: str, person_b: str, budget: str = "trung bình")
 
 TOOL_SCHEMAS = {
     "search_profiles": {
-        "description": "Tìm hồ sơ ứng viên theo bộ lọc có căn cứ từ mock_data.json.",
+        "description": "Tìm hồ sơ ứng viên theo bộ lọc có căn cứ từ mock_data.json. Nếu có nhiều sở thích, gộp vào tham số interest bằng dấu phẩy, ví dụ 'nấu ăn, cắm hoa'.",
         "inputs": {
             "gender": {"type": "str", "required": True, "examples": ["nữ", "nam"]},
             "location": {"type": "str", "required": True, "examples": ["TP.HCM", "Hà Nội", "Đà Nẵng"]},
@@ -428,3 +428,26 @@ AVAILABLE_TOOLS = {
     "suggest_conversation_topics": suggest_conversation_topics,
     "suggest_date_idea": suggest_date_idea,
 }
+
+
+def get_tools_description_prompt() -> str:
+    """
+    Tự động sinh danh sách mô tả các công cụ khả dụng từ TOOL_SCHEMAS và docstring
+    để nhúng trực tiếp vào Agent System Prompt mà KHÔNG bị hardcode.
+    """
+    lines = []
+    for idx, (name, func) in enumerate(AVAILABLE_TOOLS.items(), start=1):
+        schema = TOOL_SCHEMAS.get(name, {})
+        desc = schema.get("description") or (func.__doc__.strip() if func.__doc__ else "Không có mô tả.")
+        inputs_dict = schema.get("inputs", {})
+        if inputs_dict:
+            args_str = ", ".join(inputs_dict.keys())
+        else:
+            import inspect
+            sig = inspect.signature(func)
+            args_str = ", ".join(sig.parameters.keys())
+
+        lines.append(f"{idx}. {name}[{args_str}]: {desc}")
+
+    return "\n".join(lines)
+
