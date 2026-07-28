@@ -28,6 +28,6 @@ def llm_chatbot(user_input: str) -> str:
 
 if __name__ == "__main__":
     print("=== DEMO CẤP ĐỘ 2: CUPID CHATBOT BASELINE ===")
-    q = "Linh và Hoàng có hợp nhau không?"
+    q = "An và Linh có hợp nhau không?"
     print(f"User: {q}")
     print(f"Bot : {llm_chatbot(q)}")
