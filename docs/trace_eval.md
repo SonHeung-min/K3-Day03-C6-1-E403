@@ -15,17 +15,17 @@
 
 ---
 
-## 🧪 1.5. LOG DEMO CUPID AGENT (BASELINE VS REACT)
+## 🔍 2. SO SÁNH PHẢN HỒI (TEST CASE #3)
 
 **Câu hỏi**: *"Tôi là nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên tuyệt đối không muốn quen người hút thuốc. Hãy quét hệ thống tìm cho tôi các bạn nữ ở TP.HCM có sở thích 'đọc sách sci-fi'. Phân tích xem tôi nên bắt chuyện với ai là hợp lý nhất?"*
 
-### 🤖 DEMO 1: Chatbot Baseline
+### 🤖 Chatbot Baseline:
 
 * **System Prompt**: Cupid Chatbot chỉ được tư vấn hẹn hò tổng quát, không có quyền gọi tool, tra hồ sơ, kiểm tra database, tìm địa điểm/sự kiện hoặc tính điểm tương thích.
 * **Phản hồi**: *"Tôi là Cupid Chatbot. Rất vui được hỗ trợ bạn về lời khuyên tình cảm và hẹn hò!"*
 * **Nhận xét**: Baseline **không ảo giác dữ liệu cụ thể** vì không tự bịa danh sách hồ sơ, điểm tương thích hay kết quả quét hệ thống. Tuy nhiên phản hồi còn quá chung chung, chưa nói rõ giới hạn là không có tool/database để lọc người dùng theo TP.HCM, giới tính nữ, sở thích đọc sci-fi và điều kiện không hút thuốc.
 
-### 🧠 DEMO 2: ReAct Agent
+### 🧠 ReAct Agent:
 
 * **Thought 1**: Cần phân tích độ tương thích dựa trên hồ sơ có sẵn.
 * **Action 1**: `analyze_compatibility['Linh', 'Hoàng']`
@@ -33,21 +33,3 @@
 * **Thought 2**: Tôi đã có đủ Observation để đưa ra kết luận có căn cứ.
 * **Final Answer**: *"Phân tích cho thấy hai bạn có nền tảng tương đối phù hợp. Nên bắt đầu cuộc trò chuyện tự nhiên về sở thích chung hoặc kế hoạch cuối tuần!"*
 * **Nhận xét**: ReAct Agent có sử dụng tool nên tốt hơn baseline ở khả năng tạo trace `Thought -> Action -> Observation`. Tuy nhiên kết quả **chưa hợp lý** với yêu cầu: người dùng muốn quét các bạn nữ ở TP.HCM, thích đọc sách sci-fi và tuyệt đối không hút thuốc, nhưng Agent chỉ gọi `analyze_compatibility['Linh', 'Hoàng']`, chưa có bước lọc hồ sơ theo điều kiện và còn bỏ qua cảnh báo `smokes`. Final Answer vì vậy có nguy cơ kết luận sai, cần thêm guardrail/deal-breaker để loại ngay hồ sơ có hút thuốc trước khi khuyên bắt chuyện.
-
----
-
-## 🔍 2. SO SÁNH PHẢN HỒI (TEST CASE #3)
-
-**Câu hỏi**: *"Thời tiết ở Hà Nội hôm nay thế nào và tôi nên mặc gì đi chơi?"*
-
-### 🤖 Chatbot Baseline:
-* **Phản hồi**: *"Tôi không có truy cập Internet thời gian thực nên không biết thời tiết hôm nay ở Hà Nội."*
-* **Nhận xét**: An toàn nhưng không giải quyết được nhu cầu thực tế của người dùng.
-
-### 🧠 ReAct Agent:
-* **Thought 1**: Cần tra cứu thời tiết Hà Nội.
-* **Action 1**: `get_weather['Hà Nội']`
-* **Observation 1**: `Thời tiết Hà Nội: 28°C, Nắng nhẹ, Độ ẩm 65%.`
-* **Thought 2**: Đã có thông tin 28°C nắng nhẹ, đưa ra lời khuyên trang phục.
-* **Final Answer**: *"Thời tiết Hà Nội hôm nay 28°C, nắng nhẹ. Bạn nên mặc quần áo thoáng mát!"*
-* **Nhận xét**: Hoàn thành xuất sắc nhiệm vụ nhờ sự kết hợp giữa suy luận và công cụ.
