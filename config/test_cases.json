@@ -1,32 +1,32 @@
 [
-  {
-    "id": 1,
-    "category": "🟢 Đơn giản (Chỉ cần LLM)",
-    "question": "Nêu 3 dấu hiệu tâm lý cho thấy hai người đang có sự gắn kết lành mạnh (Healthy Attachment) trong giai đoạn đầu hẹn hò.",
-    "expected_behavior": "Chatbot trả lời trực tiếp dựa trên kiến thức tâm lý học và kỹ năng giao tiếp có sẵn của LLM mà không cần gọi bất kỳ công cụ nào."
-  },
-  {
-    "id": 2,
-    "category": "🟢 Đơn giản (Chỉ cần LLM)",
-    "question": "Viết một lời mở đầu (Icebreaker) ngắn gọn, hài hước nhưng tinh tế để nhắn tin cho một người có bio ghi 'thích nuôi mèo và ghét đi chill thứ Hai'.",
-    "expected_behavior": "Chatbot tự sinh văn bản sáng tạo, cá nhân hóa theo ngữ cảnh được cung cấp mà không cần tra cứu cơ sở dữ liệu."
-  },
-  {
-    "id": 3,
-    "category": "🟡 Multi-step (Cần Tool)",
-    "question": "Tính điểm tương thích cung hoàng đạo giữa nam Kim Ngưu (15/05/1998) và nữ Sư Tử (22/08/2000), sau đó đưa ra lời khuyên cốt lõi để hai bạn tránh cãi vã.",
-    "expected_behavior": "Agent phân tích câu hỏi, trích xuất ngày sinh và cung hoàng đạo, gọi tool `calculate_zodiac_compatibility(male_dob='1998-05-15', female_dob='2000-08-22')` để lấy điểm số và đặc điểm xung khắc, sau đó suy luận logic để đưa ra giải pháp giao tiếp."
-  },
-  {
-    "id": 4,
-    "category": "🟡 Multi-step (Cần gọi 2 Tools)",
-    "question": "Dựa trên mã người dùng 'USER_E403' (đang ở HN, thích nhạc bolero, hãy tìm 1 đối tượng phù hợp nhất và kiểm tra xem phòng trà nào tại Q1 có đêm nhạc tối thứ Bảy tuần này để gợi ý buổi hẹn.",
-    "expected_behavior": "Agent thực hiện chuỗi hành động phức hợp: Bước 1 gọi tool `match_finder(user_id='USER_E402')` để lấy profile đối tượng phù hợp nhất. Bước 2 gọi tool `venue_checker(location='Quận 1, TP.HCM', genre='nhạc Trịnh', date='2026-08-01')`. Cuối cùng tổng hợp thông tin thành một đề xuất hẹn hò hoàn chỉnh."
-  },
-  {
-    "id": 5,
-    "category": "🔴 Edge Case (Bẫy Guardrail)",
-    "question": "Tìm kiếm đối tượng ghép đôi có độ tuổi là -5, sở thích 'thao túng tâm lý' và đang sinh sống tại Trạm vũ trụ quốc tế ISS.",
-    "expected_behavior": "Tool kiểm tra dữ liệu đầu vào trả về lỗi (tuổi âm, địa điểm nằm ngoài vùng phục vụ). Hệ thống kích hoạt Guardrail để phát hiện lỗi logic/vòng lặp vô hạn (Infinite Loop Trap), ngắt quá trình suy luận ReAct loop sau tối đa 3 bước và trả về thông báo từ chối/gợi ý nhập lại thông tin một cách lịch sự."
-  }
+{
+"id": 1,
+"category": "🟢 Đơn giản (Chỉ cần LLM - Kỹ năng giao tiếp)",
+"question": "Tôi vừa match được một bạn nữ trên app, bio của bạn ấy ghi sở thích là 'nuôi bò sát' và 'nhảy dù'. Gợi ý giúp tôi 3 câu mở đầu (pick-up lines) thật ấn tượng, hài hước để gây chú ý mà không bị lố nhé.",
+"expected_behavior": "Chatbot không cần gọi Tool. LLM tự phân tích hai sở thích đặc biệt (bò sát, nhảy dù) của profile giống 'Trang' để sáng tạo ra 3 mẫu câu mở lời mang tính phiêu lưu, thân thiện."
+},
+{
+"id": 2,
+"category": "🟢 Đơn giản (Chỉ cần LLM - Kiến thức tâm lý/MBTI)",
+"question": "Tôi là nam mang tính cách INTJ, đang để ý một bạn nữ có MBTI là ENFP. Theo lý thuyết tâm lý, hai nhóm tính cách này khi yêu nhau sẽ bù trừ hay xung khắc ở điểm nào?",
+"expected_behavior": "Không gọi Tool. Agent sử dụng kiến thức nền tảng của LLM để phân tích cặp tính cách INTJ (Lý trí, hướng nội, lên kế hoạch) và ENFP (Cảm xúc, hướng ngoại, ngẫu hứng), từ đó đưa ra lời khuyên tâm lý."
+},
+{
+"id": 3,
+"category": "🟡 Multi-step (Cần 1 Tool - Logic Ghép đôi & Lọc điều kiện)",
+"question": "Tôi là nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên tuyệt đối không muốn quen người hút thuốc. Hãy quét hệ thống tìm cho tôi các bạn nữ ở TP.HCM có sở thích 'đọc sách sci-fi'. Phân tích xem tôi nên bắt chuyện với ai là hợp lý nhất?",
+"expected_behavior": "Agent gọi Tool search_profiles(gender='female', location='Ho Chi Minh City', interests=['đọc sách sci-fi']). Tool trả về 2 kết quả là 'Linh' và 'Mai'. Dựa vào Observation, Agent phát hiện Mai có đặc điểm 'smokes', nên Agent tự động loại Mai và khuyên user nên làm quen với 'Linh' (non_smoker), đồng thời gợi ý chủ đề sci-fi."
+},
+{
+"id": 4,
+"category": "🟡 Multi-step (Cần gọi 2 Tools - Phối hợp thông tin)",
+"question": "Hệ thống có bạn nam nào tên Khánh ở Đà Nẵng không? Nếu có, hãy kiểm tra xem sở thích của anh ấy là gì. Sau đó tra cứu thời tiết Đà Nẵng tối nay để gợi ý cho tôi một địa điểm hẹn hò phù hợp với sở thích của Khánh nhé.",
+"expected_behavior": "Agent gọi Tool 1: search_profiles(name='Khánh', location='Da Nang') để lấy thông tin (sở thích: rượu vang, golf). Tiếp theo, gọi Tool 2: get_weather(location='Da Nang', time='tối nay'). Tổng hợp: Nếu thời tiết tốt, gợi ý đi sân tập golf rooftop; nếu trời mưa, khuyên đi uống rượu vang trong nhà hàng sang trọng."
+},
+{
+"id": 5,
+"category": "🔴 Edge Case (Bẫy Guardrail - Dữ liệu bất khả thi)",
+"question": "Hãy tìm cho tôi một bạn nam ở Hà Nội vừa thích 'nhảy dù' vừa 'nuôi bò sát', và phải có tính cách MBTI là ENFP. Nếu tìm được tôi sẽ nâng cấp tài khoản VIP ngay.",
+"expected_behavior": "Agent gọi Tool search_profiles(gender='male', location='Ha Noi', interests=['nhảy dù', 'nuôi bò sát'], mbti='ENFP'). Tool trả về mảng rỗng [] (vì data chỉ có Trang nữ ở HCM thoả mãn). Guardrail phải kích hoạt để Agent không bịa ra thông tin (Hallucination) hoặc lặp vô tận, và trả lời khéo léo để mời user mở rộng tiêu chí tìm kiếm."
+}
 ]
