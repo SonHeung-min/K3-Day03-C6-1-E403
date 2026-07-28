@@ -131,7 +131,12 @@ def run_react_agent(user_query: str, provider: BaseLLMProvider):
             print(f"👁️ {obs_str}")
             history += f"\n{response}\n{obs_str}"
 
-            thought_clean = response.replace(f"Action: {tool_name}[{', '.join(args)}]", "").replace("Thought:", "").strip()
+            thought_clean = re.sub(
+                r"\n?Action:\s*[a-zA-Z0-9_]+\[.*?\]",
+                "",
+                response,
+                flags=re.DOTALL,
+            ).replace("Thought:", "").strip()
             react_steps.append({
                 "step": step,
                 "thought": thought_clean,

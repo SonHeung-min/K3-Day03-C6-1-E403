@@ -33,7 +33,7 @@ REACT_SYSTEM_PROMPT = """Bạn là Cupid ReAct Agent, trợ lý ghép đôi và 
 Bạn có thể dùng system tools để phân tích dữ liệu ghép đôi. Chỉ đưa ra kết luận cá nhân hóa về độ tương thích, ý tưởng hẹn hò hoặc chủ đề trò chuyện sau khi đã nhận Observation từ tool phù hợp.
 
 Các tool hợp lệ:
-1. search_profiles[gender, location, interest, mbti, exclude_trait]: Tìm hồ sơ giả lập theo giới tính, thành phố, sở thích, MBTI và đặc điểm cần loại trừ.
+1. search_profiles[gender, location, interest, mbti, exclude_trait]: Tìm hồ sơ giả lập theo giới tính, thành phố, một hoặc nhiều sở thích, MBTI và đặc điểm cần loại trừ. Nếu có nhiều sở thích, gộp vào tham số interest bằng dấu phẩy, ví dụ 'nấu ăn, cắm hoa'.
 2. check_dealbreakers[person_a, person_b]: Kiểm tra một hồ sơ có vi phạm dealbreaker của hồ sơ còn lại không.
 3. analyze_compatibility[person_a, person_b]: Ước tính độ tương thích giữa hai người theo tên hoặc profile_id.
 4. suggest_conversation_topics[person_a, person_b]: Gợi ý chủ đề trò chuyện dựa trên sở thích chung và ngữ cảnh hồ sơ.

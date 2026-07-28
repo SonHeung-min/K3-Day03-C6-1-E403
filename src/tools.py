@@ -137,12 +137,35 @@ def _normalized_set(values: List[Any]) -> set:
     return {_normalize_text(item) for item in values}
 
 
+def _split_interest_terms(*values: Any) -> List[str]:
+    terms = []
+    for value in values:
+        text = str(value or "").strip()
+        if not text:
+            continue
+        text = text.replace(";", ",").replace(" và ", ",")
+        terms.extend(part.strip() for part in text.split(",") if part.strip())
+    return terms
+
+
+def _looks_like_mbti(value: Any) -> bool:
+    normalized = _normalize_text(value).upper()
+    return (
+        len(normalized) == 4
+        and normalized[0] in "IE"
+        and normalized[1] in "NS"
+        and normalized[2] in "TF"
+        and normalized[3] in "JP"
+    )
+
+
 def search_profiles(
     gender: str = "",
     location: str = "",
     interest: str = "",
     mbti: str = "",
     exclude_trait: str = "",
+    *extra_interests: str,
 ) -> str:
     """
     Tìm hồ sơ bằng các bộ lọc đơn giản.
@@ -159,6 +182,11 @@ def search_profiles(
     """
     profiles = _load_mock_profiles()
     results = []
+    required_interests = _split_interest_terms(interest, *extra_interests)
+
+    if mbti and not _looks_like_mbti(mbti):
+        required_interests.extend(_split_interest_terms(mbti))
+        mbti = ""
 
     for profile in profiles:
         if gender and _normalize_text(profile.get("gender")) != _normalize_text(gender):
@@ -167,7 +195,10 @@ def search_profiles(
             continue
         if mbti and _normalize_text(profile.get("mbti")) != _normalize_text(mbti):
             continue
-        if interest and _normalize_text(interest) not in _normalized_set(profile.get("interests", [])):
+        profile_interests = _normalized_set(profile.get("interests", []))
+        if required_interests and not all(
+            _normalize_text(item) in profile_interests for item in required_interests
+        ):
             continue
         if exclude_trait:
             blocked = _normalize_text(exclude_trait)
@@ -348,7 +379,7 @@ TOOL_SCHEMAS = {
         "inputs": {
             "gender": {"type": "str", "required": True, "examples": ["nữ", "nam"]},
             "location": {"type": "str", "required": True, "examples": ["TP.HCM", "Hà Nội", "Đà Nẵng"]},
-            "interest": {"type": "str", "required": False, "examples": ["sách khoa học viễn tưởng", "nhảy dù"]},
+            "interest": {"type": "str", "required": False, "examples": ["sách khoa học viễn tưởng", "nấu ăn, cắm hoa"]},
             "mbti": {"type": "str", "required": False, "examples": ["INTJ", "ENFP"]},
             "exclude_trait": {"type": "str", "required": False, "examples": ["hút thuốc"]},
         },
