@@ -1,9 +1,10 @@
 """
 TOOL REGISTRY & SCHEMAS
-Role 2: Tool Engineer cho Cupid Agent.
+Role 2: Tool Engineer for Cupid Agent.
 
-Các tool trong file này dùng dữ liệu giả lập ở mock_data.json để minh họa
-ReAct Agent biết tra cứu, quan sát kết quả và không bịa hồ sơ.
+The tools use synthetic profiles from mock_data.json to demonstrate that the
+ReAct Agent can retrieve evidence, observe tool results, and avoid fabricating
+profiles or compatibility scores.
 """
 
 import json
@@ -12,13 +13,51 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
+ALIASES = {
+    "tp.hcm": "ho chi minh city",
+    "tphcm": "ho chi minh city",
+    "tp hcm": "ho chi minh city",
+    "sai gon": "ho chi minh city",
+    "saigon": "ho chi minh city",
+    "ha noi": "ha noi",
+    "hà nội": "ha noi",
+    "hanoi": "ha noi",
+    "da nang": "da nang",
+    "đà nẵng": "da nang",
+    "danang": "da nang",
+    "doc sach sci-fi": "sci-fi books",
+    "đọc sách sci-fi": "sci-fi books",
+    "nuoi bo sat": "reptile keeping",
+    "nuôi bò sát": "reptile keeping",
+    "nhay du": "skydiving",
+    "nhảy dù": "skydiving",
+    "khong hut thuoc": "non_smoker",
+    "không hút thuốc": "non_smoker",
+    "hoàng": "hoang",
+    "ho?ng": "hoang",
+    "khánh": "khanh",
+    "kh?nh": "khanh",
+    "hà": "ha",
+    "h?": "ha",
+    "bảo": "bao",
+    "b?o": "bao",
+}
+
+
 def _normalize_text(value: Any) -> str:
-    """Chuẩn hóa chuỗi để so khớp mềm."""
-    return unicodedata.normalize("NFC", str(value or "").strip().lower())
+    """Normalize text for stable matching."""
+    text = unicodedata.normalize("NFC", str(value or "").strip().casefold())
+    if text in ALIASES:
+        return ALIASES[text]
+    ascii_text = "".join(
+        char for char in unicodedata.normalize("NFD", text)
+        if unicodedata.category(char) != "Mn"
+    )
+    return ALIASES.get(ascii_text, ascii_text)
 
 
 def _load_mock_profiles() -> List[Dict[str, Any]]:
-    """Đọc dữ liệu hồ sơ từ mock_data.json."""
+    """Load profile data from mock_data.json."""
     try:
         data_path = Path(__file__).resolve().with_name("mock_data.json")
         with data_path.open("r", encoding="utf-8") as handle:
@@ -28,7 +67,7 @@ def _load_mock_profiles() -> List[Dict[str, Any]]:
 
 
 def _resolve_profile(profile_input: Any) -> Optional[Dict[str, Any]]:
-    """Tìm hồ sơ theo name hoặc profile_id."""
+    """Resolve a profile by name or profile_id."""
     if isinstance(profile_input, dict):
         return profile_input
     query = _normalize_text(profile_input)
@@ -44,7 +83,7 @@ def _resolve_profile(profile_input: Any) -> Optional[Dict[str, Any]]:
 
 
 def _profile_summary(profile: Dict[str, Any]) -> Dict[str, Any]:
-    """Rút gọn hồ sơ để Observation dễ đọc."""
+    """Return a compact profile for readable observations."""
     return {
         "profile_id": profile.get("profile_id"),
         "name": profile.get("name"),
@@ -64,7 +103,7 @@ def _profile_summary(profile: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _json(data: Any) -> str:
-    """Serialize JSON tiếng Việt dễ đọc."""
+    """Serialize readable UTF-8 JSON."""
     return json.dumps(data, ensure_ascii=False, indent=2)
 
 
@@ -76,17 +115,17 @@ def search_profiles(
     exclude_trait: str = "",
 ) -> str:
     """
-    Tìm hồ sơ theo bộ lọc cơ bản.
+    Search profiles with simple filters.
 
     Args:
-        gender: Giới tính cần tìm, ví dụ "female" hoặc "male".
-        location: Thành phố/khu vực.
-        interest: Một sở thích bắt buộc.
-        mbti: MBTI bắt buộc nếu có.
-        exclude_trait: Trait cần loại trừ, ví dụ "smokes".
+        gender: Target gender, e.g. "female" or "male".
+        location: City or region.
+        interest: Required interest.
+        mbti: Required MBTI if provided.
+        exclude_trait: Trait to exclude, e.g. "smokes".
 
     Returns:
-        str: JSON gồm danh sách hồ sơ phù hợp hoặc mảng rỗng, không tự tạo hồ sơ mới.
+        str: JSON containing matching profiles or an empty result set.
     """
     profiles = _load_mock_profiles()
     results = []
@@ -113,26 +152,28 @@ def search_profiles(
         {
             "count": len(results),
             "results": results,
-            "note": "Không tìm thấy hồ sơ phù hợp; không được tự bịa ứng viên." if not results else "Kết quả lấy từ mock_data.json.",
+            "note": "No matching profile found; do not invent a new candidate."
+            if not results
+            else "Results are grounded in mock_data.json.",
         }
     )
 
 
 def check_dealbreakers(person_a: Any, person_b: Any) -> str:
     """
-    Kiểm tra trait/red flag của một người có đụng dealbreaker của người kia không.
+    Check whether either profile violates the other's dealbreakers.
 
     Args:
-        person_a: Tên/profile_id người thứ nhất.
-        person_b: Tên/profile_id người thứ hai.
+        person_a: Name/profile_id for the first person.
+        person_b: Name/profile_id for the second person.
 
     Returns:
-        str: JSON mô tả xung đột dealbreaker.
+        str: JSON describing dealbreaker conflicts.
     """
     profile_a = _resolve_profile(person_a)
     profile_b = _resolve_profile(person_b)
     if not profile_a or not profile_b:
-        return "LỖI: Không tìm thấy đủ hồ sơ để kiểm tra dealbreaker."
+        return "ERROR: Not enough profiles found to check dealbreakers."
 
     conflicts = []
     traits_a = set(profile_a.get("personal_traits", []) + profile_a.get("red_flags", []))
@@ -140,10 +181,10 @@ def check_dealbreakers(person_a: Any, person_b: Any) -> str:
 
     for breaker in profile_a.get("dealbreakers", []):
         if breaker in traits_b:
-            conflicts.append(f"{profile_a['name']} không hợp với trait '{breaker}' của {profile_b['name']}")
+            conflicts.append(f"{profile_a['name']} has a dealbreaker conflict with {profile_b['name']}: {breaker}")
     for breaker in profile_b.get("dealbreakers", []):
         if breaker in traits_a:
-            conflicts.append(f"{profile_b['name']} không hợp với trait '{breaker}' của {profile_a['name']}")
+            conflicts.append(f"{profile_b['name']} has a dealbreaker conflict with {profile_a['name']}: {breaker}")
 
     return _json(
         {
@@ -157,19 +198,19 @@ def check_dealbreakers(person_a: Any, person_b: Any) -> str:
 
 def analyze_compatibility(person_a: Any, person_b: Any) -> str:
     """
-    Phân tích độ tương thích ước tính giữa hai hồ sơ.
+    Estimate compatibility between two profiles.
 
     Args:
-        person_a: Tên/profile_id người thứ nhất.
-        person_b: Tên/profile_id người thứ hai.
+        person_a: Name/profile_id for the first person.
+        person_b: Name/profile_id for the second person.
 
     Returns:
-        str: JSON gồm điểm 0-100, band, evidence và lưu ý an toàn.
+        str: JSON with score, score band, evidence, cautions, and confidence.
     """
     profile_a = _resolve_profile(person_a)
     profile_b = _resolve_profile(person_b)
     if not profile_a or not profile_b:
-        return "LỖI: Không tìm thấy đủ hồ sơ để phân tích độ tương thích."
+        return "ERROR: Not enough profiles found to analyze compatibility."
 
     score = 40
     evidence = []
@@ -178,25 +219,25 @@ def analyze_compatibility(person_a: Any, person_b: Any) -> str:
     shared_interests = sorted(set(profile_a.get("interests", [])) & set(profile_b.get("interests", [])))
     if shared_interests:
         score += min(20, len(shared_interests) * 8)
-        evidence.append(f"Sở thích chung: {', '.join(shared_interests)}")
+        evidence.append(f"Shared interests: {', '.join(shared_interests)}")
 
     if profile_a.get("relationship_goal") == profile_b.get("relationship_goal"):
         score += 15
-        evidence.append(f"Cùng mục tiêu mối quan hệ: {profile_a.get('relationship_goal')}")
+        evidence.append(f"Aligned relationship goal: {profile_a.get('relationship_goal')}")
 
     shared_traits = sorted(set(profile_a.get("personal_traits", [])) & set(profile_b.get("personal_traits", [])))
     if shared_traits:
         score += min(10, len(shared_traits) * 4)
-        evidence.append(f"Trait chung: {', '.join(shared_traits)}")
+        evidence.append(f"Shared traits: {', '.join(shared_traits)}")
 
     if profile_a.get("location") == profile_b.get("location"):
         score += 10
-        evidence.append("Cùng khu vực nên dễ gặp mặt")
+        evidence.append("Same city, easier to meet")
 
     shared_date_styles = sorted(set(profile_a.get("preferred_date_style", [])) & set(profile_b.get("preferred_date_style", [])))
     if shared_date_styles:
         score += min(10, len(shared_date_styles) * 5)
-        evidence.append(f"Kiểu hẹn phù hợp: {', '.join(shared_date_styles)}")
+        evidence.append(f"Compatible date styles: {', '.join(shared_date_styles)}")
 
     dealbreaker_data = json.loads(check_dealbreakers(profile_a, profile_b))
     if dealbreaker_data["conflicts"]:
@@ -205,18 +246,25 @@ def analyze_compatibility(person_a: Any, person_b: Any) -> str:
 
     score = max(0, min(100, score))
     if score >= 85:
-        band = "Rất tiềm năng"
+        band = "Very promising"
     elif score >= 70:
-        band = "Khá hợp"
+        band = "Good match"
     elif score >= 50:
-        band = "Có điểm chung nhưng cần tìm hiểu thêm"
+        band = "Some common ground; learn more"
     elif score >= 30:
-        band = "Khá nhiều khác biệt"
+        band = "Several differences"
     else:
-        band = "Không nên ưu tiên nếu không có thêm dữ liệu mới"
+        band = "Low priority unless new data appears"
 
     if not evidence:
-        evidence.append("Dữ liệu hiện có chưa cho thấy nhiều điểm chung rõ ràng")
+        evidence.append("The current profiles do not show many clear shared signals")
+
+    missing_fields = [
+        key
+        for key in ("mbti", "communication_style", "relationship_goal")
+        if not profile_a.get(key) or not profile_b.get(key)
+    ]
+    data_confidence = "medium" if missing_fields else "high"
 
     return _json(
         {
@@ -224,59 +272,59 @@ def analyze_compatibility(person_a: Any, person_b: Any) -> str:
             "band": band,
             "evidence": evidence,
             "cautions": cautions,
-            "data_confidence": "medium",
-            "note": "Đây là độ tương thích ước tính dựa trên dữ liệu hồ sơ hiện có, không phải kết luận tuyệt đối.",
+            "data_confidence": data_confidence,
+            "note": "This is an estimated compatibility score based on available profile data, not a definitive conclusion.",
         }
     )
 
 
-def suggest_date_idea(person_a: Any, person_b: Any, budget: str = "trung bình") -> str:
+def suggest_date_idea(person_a: Any, person_b: Any, budget: str = "medium") -> str:
     """
-    Gợi ý ý tưởng hẹn hò dựa trên hai hồ sơ và ngân sách.
+    Suggest a date idea based on two profiles and a budget level.
     """
     profile_a = _resolve_profile(person_a)
     profile_b = _resolve_profile(person_b)
     if not profile_a or not profile_b:
-        return "LỖI: Không tìm thấy đủ hồ sơ để đề xuất ý tưởng hẹn hò."
+        return "ERROR: Not enough profiles found to suggest a date idea."
 
     shared_styles = sorted(set(profile_a.get("preferred_date_style", [])) & set(profile_b.get("preferred_date_style", [])))
     shared_interests = sorted(set(profile_a.get("interests", [])) & set(profile_b.get("interests", [])))
 
     if shared_styles:
-        idea = f"một buổi {shared_styles[0]}"
+        idea = f"a {shared_styles[0]} date"
     elif shared_interests:
-        idea = f"một buổi trò chuyện xoay quanh {shared_interests[0]}"
+        idea = f"a relaxed conversation around {shared_interests[0]}"
     else:
-        idea = "một buổi cà phê nhẹ nhàng để tìm hiểu kỳ vọng của nhau"
+        idea = "a low-pressure coffee date to learn about each other's expectations"
 
     return _json(
         {
             "idea": idea,
-            "budget": budget or "trung bình",
-            "why": "Gợi ý dựa trên preferred_date_style và sở thích chung trong hồ sơ.",
+            "budget": budget or "medium",
+            "why": "The suggestion is based on shared preferred_date_style and shared interests.",
         }
     )
 
 
 def suggest_conversation_topics(person_a: Any, person_b: Any) -> str:
     """
-    Gợi ý chủ đề trò chuyện dựa trên hai hồ sơ.
+    Suggest conversation topics based on two profiles.
     """
     profile_a = _resolve_profile(person_a)
     profile_b = _resolve_profile(person_b)
     if not profile_a or not profile_b:
-        return "LỖI: Không tìm thấy đủ hồ sơ để đề xuất chủ đề trò chuyện."
+        return "ERROR: Not enough profiles found to suggest conversation topics."
 
     shared_interests = sorted(set(profile_a.get("interests", [])) & set(profile_b.get("interests", [])))
-    topics = [f"Sở thích chung: {item}" for item in shared_interests[:3]]
+    topics = [f"Shared interest: {item}" for item in shared_interests[:3]]
     topics.extend(
         [
-            f"Hỏi nhẹ về kiểu hẹn yêu thích của {profile_b['name']}",
-            "Một hoạt động cuối tuần khiến cả hai thấy thoải mái",
-            "Cách hai người cân bằng công việc và đời sống cá nhân",
+            f"Ask about {profile_b['name']}'s ideal low-pressure date",
+            "A weekend activity that feels comfortable for both people",
+            "How each person balances work, hobbies, and personal time",
         ]
     )
-    return _json({"topics": topics[:5], "tone": "tự nhiên, tôn trọng, không gây áp lực"})
+    return _json({"topics": topics[:5], "tone": "natural, respectful, low-pressure"})
 
 
 AVAILABLE_TOOLS = {
