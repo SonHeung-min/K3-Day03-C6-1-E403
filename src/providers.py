@@ -140,27 +140,79 @@ class MockProvider(BaseLLMProvider):
         text = prompt.lower()
         # Nếu là Chatbot Baseline
         if "baseline" in system_prompt.lower() or "chatbot" in system_prompt.lower():
-            return "Tôi là Cupid Chatbot. Rất vui được hỗ trợ bạn về lời khuyên tình cảm và hẹn hò!"
+            if "hãy tìm" in text or "tìm cho tôi" in text or "không hút thuốc" in text or "mbti" in text:
+                return (
+                    "Mình có thể tư vấn ở mức chung, nhưng không có quyền tra hồ sơ, lọc database hoặc xác nhận ứng viên thật. "
+                    "Với yêu cầu này, bạn nên dùng Cupid ReAct Agent để gọi tool tìm hồ sơ và kiểm tra điều kiện."
+                )
+            if "nuôi bò sát" in text and "nhảy dù" in text:
+                return (
+                    "Gợi ý 3 câu mở đầu:\n"
+                    "1. 'Bio của bạn làm mình phân vân: nên hỏi về bò sát trước hay chuẩn bị tinh thần nhảy dù trước?'\n"
+                    "2. 'Bạn thích nuôi bò sát và nhảy dù, vậy chắc gu trò chuyện của bạn cũng không dành cho người yếu tim nhỉ?'\n"
+                    "3. 'Mình chưa từng nhảy dù, nhưng nếu được nghe bạn kể về nó thì chắc cũng đủ làm tim rơi tự do rồi.'"
+                )
+            if "gắn kết lành mạnh" in text:
+                return (
+                    "Ba dấu hiệu khá tốt là: 1. Hai người giao tiếp rõ ràng và không ép nhau trả lời ngay; "
+                    "2. Cả hai tôn trọng ranh giới cá nhân; "
+                    "3. Mỗi người vẫn giữ đời sống riêng nhưng chủ động dành thời gian tìm hiểu nhau."
+                )
+            return (
+                "Mình có thể tư vấn ở mức chung, nhưng không có quyền tra hồ sơ hoặc tính điểm tương thích. "
+                "Nếu cần phân tích theo dữ liệu, hãy dùng Cupid ReAct Agent."
+            )
         
         # Nếu là ReAct Agent và đã có Observation trong chat history
         if "observation:" in text:
+            if '"count": 0' in text:
+                return (
+                    "Thought: Observation cho thấy không có hồ sơ phù hợp, tôi không được bịa ứng viên mới.\n"
+                    "Final Answer: Mình chưa tìm thấy bạn nam ở Hà Nội thỏa đồng thời các tiêu chí nhảy dù, nuôi bò sát, MBTI ENFP và không hút thuốc. Bạn có thể nới một tiêu chí như địa điểm hoặc MBTI để hệ thống tìm được nhiều lựa chọn hơn."
+                )
+            if '"results"' in text:
+                return (
+                    "Thought: Observation đã trả về hồ sơ phù hợp và đã loại trừ người hút thuốc.\n"
+                    "Final Answer: Dựa trên dữ liệu hiện có, Linh là lựa chọn hợp lý nhất vì ở TP.HCM, thích đọc sách sci-fi và có trait non_smoker. Bạn có thể bắt chuyện bằng một câu nhẹ như: 'Nếu được chọn một thế giới sci-fi để đi cà phê cuối tuần, bạn chọn nơi nào?'"
+                )
+            if '"topics"' in text:
+                return (
+                    "Thought: Tôi đã có Observation về độ tương thích và chủ đề trò chuyện.\n"
+                    "Final Answer: Linh và Hoàng có vài điểm chung đủ để bắt đầu tìm hiểu, đặc biệt ở lối sống kỷ luật và hoạt động lành mạnh. Chủ đề nên mở đầu nhẹ bằng sở thích cuối tuần, cách cân bằng công việc-cuộc sống, hoặc một buổi đi bộ/cà phê yên tĩnh."
+                )
+            if '"score"' in text and "suggest_conversation_topics" not in text:
+                return (
+                    "Thought: Đã có điểm tương thích, cần thêm chủ đề trò chuyện để câu trả lời hữu ích hơn.\n"
+                    "Action: suggest_conversation_topics['Linh', 'Hoàng']"
+                )
             return (
                 "Thought: Tôi đã có đủ Observation để đưa ra kết luận có căn cứ.\n"
-                "Final Answer: Phân tích cho thấy hai bạn có nền tảng tương đối phù hợp. "
-                "Nên bắt đầu cuộc trò chuyện tự nhiên về sở thích chung hoặc kế hoạch cuối tuần!"
+                "Final Answer: Mình sẽ dựa trên Observation để trả lời, không tự bịa thêm hồ sơ hay điểm số."
             )
             
         # ReAct Agent bước đầu tiên: sinh Action
-        if "gắn kết" in text or "icebreaker" in text:
+        if "gắn kết" in text or "câu mở đầu" in text:
             return (
                 "Thought: Đây là câu hỏi tư vấn chung, không cần tra cứu hồ sơ.\n"
-                "Final Answer: Gắn kết lành mạnh thể hiện qua: 1. Giao tiếp cởi mở, 2. Tôn trọng ranh giới cá nhân, 3. Cùng nỗ lực lắng nghe."
+                "Final Answer: Đây là câu hỏi có thể trả lời trực tiếp bằng kiến thức giao tiếp chung, không cần gọi tool."
             )
         
-        if "thao túng" in text or "iss" in text or "-5" in text:
+        if "hút thuốc" in text and "đọc sách sci-fi" in text:
             return (
-                "Thought: Đầu vào không hợp lệ hoặc có dấu hiệu bẫy logic.\n"
-                "Action: analyze_compatibility['USR-999', 'ISS-Station']"
+                "Thought: Cần tìm nữ ở Ho Chi Minh City thích đọc sách sci-fi và loại trừ trait smokes.\n"
+                "Action: search_profiles['female', 'Ho Chi Minh City', 'đọc sách sci-fi', '', 'smokes']"
+            )
+
+        if "linh" in text and "hoàng" in text:
+            return (
+                "Thought: Cần phân tích độ tương thích giữa Linh và Hoàng trước.\n"
+                "Action: analyze_compatibility['Linh', 'Hoàng']"
+            )
+
+        if "nhảy dù" in text and "nuôi bò sát" in text and "enfp" in text:
+            return (
+                "Thought: Cần tìm hồ sơ nam ở Ha Noi thỏa các tiêu chí chặt và loại trừ người hút thuốc.\n"
+                "Action: search_profiles['male', 'Ha Noi', 'nhảy dù', 'ENFP', 'smokes']"
             )
 
         return (

@@ -20,12 +20,7 @@ if sys.stdout.encoding != 'utf-8':
         pass
 
 # Import các thành phần từ file của Role 2, Role 3 & Multi-Provider Adapter
-from tools import (
-    AVAILABLE_TOOLS,
-    analyze_compatibility,
-    suggest_date_idea,
-    suggest_conversation_topics,
-)
+from tools import AVAILABLE_TOOLS
 from prompts import CHATBOT_BASELINE_PROMPT, REACT_SYSTEM_PROMPT, MAX_ITERATIONS
 from providers import get_llm_provider
 
@@ -45,12 +40,13 @@ def load_test_cases():
         return json.load(f)
 
 
-def run_baseline_chatbot(user_query: str, provider):
+def run_baseline_chatbot(user_query: str, provider, show_prompt: bool = False):
     """
     Dựng Chatbot gốc (Baseline) không có công cụ.
     """
     print(f"\n💬 [CHATBOT BASELINE] Câu hỏi: {user_query}")
-    print(f"⚙️ System Prompt: {CHATBOT_BASELINE_PROMPT.strip()}\n")
+    if show_prompt:
+        print(f"⚙️ System Prompt: {CHATBOT_BASELINE_PROMPT.strip()}\n")
 
     # Gọi LLM Provider thực hiện sinh câu trả lời
     response = provider.generate(user_query, system_prompt=CHATBOT_BASELINE_PROMPT)
@@ -124,9 +120,14 @@ def run_react_agent(user_query: str, provider):
             )
 
     if step >= MAX_ITERATIONS:
-        print(
-            f"\n🛡️ GUARDRAIL TRIGGERED: Đã đạt giới hạn tối đa {MAX_ITERATIONS} bước. Ngắt lặp an toàn!"
+        fallback = (
+            f"Thought: Tôi đã chạm giới hạn {MAX_ITERATIONS} bước nên cần dừng an toàn.\n"
+            "Final Answer: Mình chưa có đủ bằng chứng để kết luận chắc chắn. "
+            "Bạn có thể cung cấp thêm thông tin hoặc nới tiêu chí tìm kiếm để Cupid Agent phân tích tiếp."
         )
+        print(f"\n🛡️ GUARDRAIL TRIGGERED: Đã đạt giới hạn tối đa {MAX_ITERATIONS} bước. Ngắt lặp an toàn!")
+        print(fallback)
+        return fallback
 
 
 if __name__ == "__main__":
@@ -144,12 +145,14 @@ if __name__ == "__main__":
     tests = load_test_cases()
     print(f"✅ Đã tải thành công {len(tests)} Test Cases từ config/test_cases.json\n")
 
-    # Chạy thử câu test số 3 từ config/test_cases.json
-    sample_query = tests[2]["question"]
+    for test in tests:
+        print("\n" + "=" * 70)
+        print(f"🧪 TEST CASE #{test['id']}: {test['category']}")
+        print("=" * 70)
 
-    print("--- DEMO 1: CHẠY TRÊN CHATBOT BASELINE ---")
-    run_baseline_chatbot(sample_query, provider)
+        print("--- DEMO 1: CHẠY TRÊN CHATBOT BASELINE ---")
+        run_baseline_chatbot(test["question"], provider)
 
-    print("\n--- DEMO 2: CHẠY TRÊN REACT AGENT ---")
-    run_react_agent(sample_query, provider)
+        print("\n--- DEMO 2: CHẠY TRÊN REACT AGENT ---")
+        run_react_agent(test["question"], provider)
 

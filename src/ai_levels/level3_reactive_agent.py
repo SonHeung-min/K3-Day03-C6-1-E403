@@ -1,30 +1,41 @@
 """
-🧠 CẤP ĐỘ 3: REACTIVE AGENT (ReAct Agent - Thought -> Action -> Observation)
-Agent biết suy nghĩ, tự ra quyết định gọi Tool thực tế và quan sát kết quả để trả lời.
+CẤP ĐỘ 3: REACTIVE AGENT
+Minh họa Cupid ReAct Agent với chuỗi Thought -> Action -> Observation.
 """
 
-import json
+import sys
 
-# Định nghĩa Tool thực tế
-def get_weather(city: str) -> str:
-    return f"Thời tiết tại {city}: 28°C, Nắng nhẹ, Độ ẩm 65%."
+if sys.stdout.encoding != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
-def search_flights(origin: str, destination: str) -> str:
-    return f"Chuyến bay {origin} -> {destination}: Vé VN123 giá 1.500.000 VNĐ."
+
+def analyze_compatibility(person_a: str, person_b: str) -> str:
+    return f"Độ tương thích ước tính giữa {person_a} và {person_b}: 68/100; có chung lối sống năng động."
+
+
+def suggest_conversation_topics(person_a: str, person_b: str) -> str:
+    return f"Chủ đề cho {person_a} và {person_b}: sở thích cuối tuần, đi bộ, cân bằng công việc-cuộc sống."
+
 
 def reactive_agent_step(user_goal: str):
     print(f"🎯 Goal: {user_goal}")
-    
-    # Bước 1: Thought & Action gọi weather tool
-    print("\n🧠 [Thought 1]: Cần kiểm tra thời tiết thực tế trước.")
-    print("🛠️ [Action 1] : get_weather('Hà Nội')")
-    obs1 = get_weather("Hà Nội")
+
+    print("\n🧠 [Thought 1]: Cần phân tích độ tương thích dựa trên hồ sơ.")
+    print("🛠️ [Action 1] : analyze_compatibility('Linh', 'Hoàng')")
+    obs1 = analyze_compatibility("Linh", "Hoàng")
     print(f"👁️ [Observation 1]: {obs1}")
-    
-    # Bước 2: Thought & Final Answer
-    print("\n🧠 [Thought 2]: Đã có dữ liệu thời tiết 28°C nắng nhẹ. Đưa ra câu trả lời.")
-    print(f"🏁 [Final Answer]: Thời tiết Hà Nội hôm nay 28°C nắng nhẹ. Bạn nên mặc áo phông thoáng mát!")
+
+    print("\n🧠 [Thought 2]: Cần thêm chủ đề trò chuyện để câu trả lời hữu ích.")
+    print("🛠️ [Action 2] : suggest_conversation_topics('Linh', 'Hoàng')")
+    obs2 = suggest_conversation_topics("Linh", "Hoàng")
+    print(f"👁️ [Observation 2]: {obs2}")
+
+    print("\n🏁 [Final Answer]: Linh và Hoàng có điểm chung đủ để tìm hiểu thêm. Nên mở đầu bằng chủ đề cuối tuần hoặc một buổi đi bộ/cà phê yên tĩnh.")
+
 
 if __name__ == "__main__":
-    print("=== DEMO CẤP ĐỘ 3: REACTIVE AGENT (ReAct Loop) ===")
-    reactive_agent_step("Thời tiết Hà Nội hôm nay thế nào và nên mặc gì?")
+    print("=== DEMO CẤP ĐỘ 3: CUPID REACT AGENT ===")
+    reactive_agent_step("Phân tích Linh và Hoàng có hợp nhau không?")

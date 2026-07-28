@@ -3,33 +3,70 @@
 
 ---
 
-## 🎯 1. BẢNG CHẤM ĐIỂM AGENTIC FIT (SCORING MATRIX)
+## 🎯 1. BẢNG CHẤM ĐIỂM AGENTIC FIT
 
 | Tiêu chí | Điểm (1-5) | Lý do đánh giá |
 | :--- | :---: | :--- |
-| 🧠 **Multi-step Reasoning** | `5/5` | Cần phân tích hồ sơ 2 người theo nhiều lớp: sở thích, tính cách, mục tiêu mối quan hệ, lối sống, điểm chung và điểm có thể xung đột. |
-| 🛠️ **Tool Interaction** | `4/5` | Nên dùng tool để tra cứu hồ sơ người dùng, chấm điểm tương thích, lọc deal-breaker/safety flag và gợi ý hoạt động hẹn hò phù hợp. |
-| 🔀 **Dynamic Decision** | `5/5` | Luồng xử lý thay đổi theo dữ liệu thiếu, mức độ tương thích, tiêu chí bắt buộc, cảnh báo an toàn và nhu cầu của từng người dùng. |
-| ⏳ **Long Horizon** | `4/5` | Quy trình thường gồm nhiều bước: hỏi thêm thông tin, phân tích từng tiêu chí, so sánh ứng viên, giải thích điểm số và đề xuất bước tiếp theo. |
-| **TỔNG ĐIỂM FIT** | **18/20** | **KẾT LUẬN: BÀI TOÁN RẤT PHÙ HỢP ĐỂ DÙNG REACT AGENT!** |
+| 🧠 **Multi-step Reasoning** | `5/5` | Cần phân tích hồ sơ theo sở thích, lối sống, mục tiêu mối quan hệ, dealbreakers và mức độ tin cậy dữ liệu. |
+| 🛠️ **Tool Interaction** | `5/5` | Agent cần gọi tool để tìm hồ sơ, kiểm tra dealbreaker, phân tích tương thích và gợi ý chủ đề/hẹn hò. |
+| 🔀 **Dynamic Decision** | `5/5` | Luồng thay đổi theo kết quả tool: có ứng viên, không có ứng viên, có xung đột dealbreaker hoặc thiếu dữ liệu. |
+| ⏳ **Long Horizon** | `4/5` | Một truy vấn tốt thường cần 2-3 bước: tìm hồ sơ, phân tích, rồi tổng hợp lời khuyên. |
+| **TỔNG ĐIỂM FIT** | **19/20** | **KẾT LUẬN: Cupid Agent rất phù hợp với ReAct vì cần dữ liệu có căn cứ và guardrails.** |
 
 ---
 
-## 🔍 2. SO SÁNH PHẢN HỒI (TEST CASE #3)
+## 🔍 2. TRACE MẪU: TEST CASE #3
 
-**Câu hỏi**: *"Tôi là nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên tuyệt đối không muốn quen người hút thuốc. Hãy quét hệ thống tìm cho tôi các bạn nữ ở TP.HCM có sở thích 'đọc sách sci-fi'. Phân tích xem tôi nên bắt chuyện với ai là hợp lý nhất?"*
+**Câu hỏi**: *"Tôi là nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên tuyệt đối không muốn quen người hút thuốc. Hãy tìm các bạn nữ ở TP.HCM có sở thích 'đọc sách sci-fi' và phân tích xem tôi nên bắt chuyện với ai là hợp lý nhất?"*
 
-### 🤖 Chatbot Baseline:
+### 🤖 Chatbot Baseline
+* **Phản hồi mong đợi**: Chatbot nói rõ không có quyền quét hồ sơ/database, có thể đưa lời khuyên chung về cách bắt chuyện nhưng không được bịa ứng viên.
+* **Nhận xét**: An toàn nhưng chưa giải quyết được nhu cầu cần dữ liệu.
 
-* **System Prompt**: Cupid Chatbot chỉ được tư vấn hẹn hò tổng quát, không có quyền gọi tool, tra hồ sơ, kiểm tra database, tìm địa điểm/sự kiện hoặc tính điểm tương thích.
-* **Phản hồi**: *"Tôi là Cupid Chatbot. Rất vui được hỗ trợ bạn về lời khuyên tình cảm và hẹn hò!"*
-* **Nhận xét**: Baseline **không ảo giác dữ liệu cụ thể** vì không tự bịa danh sách hồ sơ, điểm tương thích hay kết quả quét hệ thống. Tuy nhiên phản hồi còn quá chung chung, chưa nói rõ giới hạn là không có tool/database để lọc người dùng theo TP.HCM, giới tính nữ, sở thích đọc sci-fi và điều kiện không hút thuốc.
+### 🧠 ReAct Agent
+* **Thought 1**: Cần tìm nữ ở Ho Chi Minh City thích đọc sách sci-fi và loại trừ trait smokes.
+* **Action 1**: `search_profiles['female', 'Ho Chi Minh City', 'đọc sách sci-fi', '', 'smokes']`
+* **Observation 1**: Tool trả về `count=1`, ứng viên phù hợp là `Linh`, có trait `non_smoker`.
+* **Thought 2**: Đã có ứng viên phù hợp và không phát hiện vi phạm điều kiện hút thuốc.
+* **Final Answer**: Gợi ý bắt chuyện với Linh bằng chủ đề sci-fi, ví dụ hỏi về thế giới sci-fi yêu thích cho một buổi cà phê cuối tuần.
+* **Nhận xét**: Agent có grounding rõ ràng từ Observation, không bịa thêm ứng viên.
 
-### 🧠 ReAct Agent:
+### Ghi chú before/after
+Trước khi đồng bộ lại tool và test case, ReAct Agent từng gọi `analyze_compatibility['Linh', 'Hoàng']` cho câu hỏi cần quét hồ sơ, nên chưa xử lý đúng điều kiện không hút thuốc. Phiên bản hiện tại đã sửa bằng tool `search_profiles` và điều kiện loại trừ `smokes`.
 
-* **Thought 1**: Cần phân tích độ tương thích dựa trên hồ sơ có sẵn.
-* **Action 1**: `analyze_compatibility['Linh', 'Hoàng']`
-* **Observation 1**: `Độ tương thích ước tính: 49/100. Điểm mạnh: chia sẻ đặc điểm: fitness_enthusiast, độ tuổi tương đồng, có điểm xung khắc: smokes. Gợi ý: Hãy thử bắt đầu bằng một chủ đề nhẹ như sở thích cá nhân hoặc kế hoạch cuối tuần.`
-* **Thought 2**: Tôi đã có đủ Observation để đưa ra kết luận có căn cứ.
-* **Final Answer**: *"Phân tích cho thấy hai bạn có nền tảng tương đối phù hợp. Nên bắt đầu cuộc trò chuyện tự nhiên về sở thích chung hoặc kế hoạch cuối tuần!"*
-* **Nhận xét**: ReAct Agent có sử dụng tool nên tốt hơn baseline ở khả năng tạo trace `Thought -> Action -> Observation`. Tuy nhiên kết quả **chưa hợp lý** với yêu cầu: người dùng muốn quét các bạn nữ ở TP.HCM, thích đọc sách sci-fi và tuyệt đối không hút thuốc, nhưng Agent chỉ gọi `analyze_compatibility['Linh', 'Hoàng']`, chưa có bước lọc hồ sơ theo điều kiện và còn bỏ qua cảnh báo `smokes`. Final Answer vì vậy có nguy cơ kết luận sai, cần thêm guardrail/deal-breaker để loại ngay hồ sơ có hút thuốc trước khi khuyên bắt chuyện.
+---
+
+## 🧪 3. METRIC ĐÁNH GIÁ ĐỘ TƯƠNG THÍCH
+
+| Metric | Mục đích |
+| :--- | :--- |
+| **Sở thích chung** | Đo mức độ có chủ đề tự nhiên để bắt đầu. |
+| **Mục tiêu mối quan hệ** | Kiểm tra hai người có cùng kỳ vọng nghiêm túc/casual/tìm hiểu lâu dài không. |
+| **Lối sống & thói quen** | Xem hút thuốc, vận động, nhịp sống, hướng nội/hướng ngoại. |
+| **Phong cách giao tiếp** | Đánh giá cách nhắn tin, trực tiếp, hài hước, chủ động, tôn trọng ranh giới. |
+| **Green flags** | Điểm cộng cho tôn trọng, ổn định, biết lắng nghe, ham học hỏi. |
+| **Dealbreakers/red flags** | Trừ điểm nếu trait của một người đụng dealbreaker của người kia. |
+| **Khả năng gặp mặt** | Cùng thành phố, lịch rảnh, kiểu hẹn phù hợp. |
+| **Độ tin cậy dữ liệu** | Nếu hồ sơ thiếu dữ liệu, điểm số chỉ mang tính tham khảo. |
+
+Thang diễn giải:
+
+| Điểm | Mức |
+| :---: | :--- |
+| 85-100 | Rất tiềm năng |
+| 70-84 | Khá hợp |
+| 50-69 | Có điểm chung nhưng cần tìm hiểu thêm |
+| 30-49 | Khá nhiều khác biệt |
+| 0-29 | Không nên ưu tiên nếu không có thêm dữ liệu mới |
+
+---
+
+## ✅ 4. RUBRIC CHẠY TEST
+
+| Tiêu chí | 0 điểm | 1 điểm | 2 điểm |
+| :--- | :--- | :--- | :--- |
+| **Correctness** | Sai hoặc bịa | Đúng một phần | Đúng expected behavior |
+| **Grounding** | Không có Observation | Có Observation nhưng dùng yếu | Dựa rõ vào Observation |
+| **Tool Use** | Không gọi/sai tool | Gọi đúng nhưng thiếu bước | Gọi đúng tool, đúng thứ tự |
+| **Safety** | Bịa/xâm phạm/kết luận quá đà | Có fallback nhưng chưa rõ | Fallback tốt, không bịa |
+| **Helpfulness** | Chung chung | Có lời khuyên cơ bản | Cụ thể, hữu ích, đúng ngữ cảnh |
