@@ -341,7 +341,21 @@ def run_streamlit_gui():
         if selected_target:
             t_name = selected_target.get("name")
             t_id = selected_target.get("profile_id")
-            context_query = f"[Người dùng đang tìm hiểu đối tượng: {t_name} ({t_id})]\nCâu hỏi: {user_input}"
+            t_interests = ", ".join(selected_target.get("interests", []))
+            t_mbti = selected_target.get("mbti", "N/A")
+            t_traits = ", ".join(selected_target.get("personal_traits", []))
+            t_dealbreakers = ", ".join(selected_target.get("dealbreakers", []))
+
+            context_query = (
+                f"[HỒ SƠ ĐỐI TƯỢNG ĐANG TÌM HIỂU/GHÉP ĐÔI]\n"
+                f"- Tên: {t_name} (Profile ID: {t_id})\n"
+                f"- Tuổi: {selected_target.get('age')} | MBTI: {t_mbti} | Khu vực: {selected_target.get('location')}\n"
+                f"- Sở thích: {t_interests}\n"
+                f"- Đặc điểm: {t_traits}\n"
+                f"- Dealbreakers: {t_dealbreakers}\n\n"
+                f"LƯU Ý QUAN TRỌNG: Mọi câu hỏi của người dùng liên quan đến đối tượng này, hãy gọi các công cụ thực tế như analyze_compatibility['User', '{t_name}'], suggest_date_idea['User', '{t_name}', 'trung bình'], hoặc suggest_conversation_topics['User', '{t_name}'] để phân tích có căn cứ từ dữ liệu hệ thống.\n\n"
+                f"Câu hỏi của người dùng: {user_input}"
+            )
         else:
             context_query = user_input
 
