@@ -188,7 +188,7 @@ def search_profiles(
     )
 
 
-def check_dealbreakers(person_a: Any, person_b: Any) -> str:
+def check_dealbreakers(person_a: str, person_b: str) -> str:
     """
     Kiểm tra liệu một người có vi phạm dealbreaker của người còn lại không.
     """
@@ -218,7 +218,7 @@ def check_dealbreakers(person_a: Any, person_b: Any) -> str:
     )
 
 
-def analyze_compatibility(person_a: Any, person_b: Any) -> str:
+def analyze_compatibility(person_a: str, person_b: str) -> str:
     """
     Ước tính độ tương thích giữa hai hồ sơ.
     """
@@ -293,35 +293,7 @@ def analyze_compatibility(person_a: Any, person_b: Any) -> str:
     )
 
 
-def suggest_date_idea(person_a: Any, person_b: Any, budget: str = "trung bình") -> str:
-    """
-    Gợi ý ý tưởng hẹn hò dựa trên hai hồ sơ và mức ngân sách.
-    """
-    profile_a = _resolve_profile(person_a)
-    profile_b = _resolve_profile(person_b)
-    if not profile_a or not profile_b:
-        return "ERROR: Không tìm thấy đủ hồ sơ để gợi ý buổi hẹn."
-
-    shared_styles = sorted(set(profile_a.get("preferred_date_style", [])) & set(profile_b.get("preferred_date_style", [])))
-    shared_interests = sorted(set(profile_a.get("interests", [])) & set(profile_b.get("interests", [])))
-
-    if shared_styles:
-        idea = f"một buổi {shared_styles[0]}"
-    elif shared_interests:
-        idea = f"một cuộc trò chuyện nhẹ nhàng xoay quanh {shared_interests[0]}"
-    else:
-        idea = "một buổi cà phê áp lực thấp để tìm hiểu kỳ vọng của nhau"
-
-    return _json(
-        {
-            "idea": idea,
-            "budget": _normalize_text(budget or "trung bình"),
-            "why": "Gợi ý dựa trên preferred_date_style và sở thích chung của hai hồ sơ.",
-        }
-    )
-
-
-def suggest_conversation_topics(person_a: Any, person_b: Any) -> str:
+def suggest_conversation_topics(person_a: str, person_b: str) -> str:
     """
     Gợi ý chủ đề trò chuyện dựa trên hai hồ sơ.
     """
@@ -342,10 +314,48 @@ def suggest_conversation_topics(person_a: Any, person_b: Any) -> str:
     return _json({"topics": topics[:5], "tone": "tự nhiên, tôn trọng, ít áp lực"})
 
 
+TOOL_SCHEMAS = {
+    "search_profiles": {
+        "description": "Tìm hồ sơ ứng viên theo bộ lọc có căn cứ từ mock_data.json.",
+        "inputs": {
+            "gender": {"type": "str", "required": True, "examples": ["nữ", "nam"]},
+            "location": {"type": "str", "required": True, "examples": ["TP.HCM", "Hà Nội", "Đà Nẵng"]},
+            "interest": {"type": "str", "required": False, "examples": ["sách khoa học viễn tưởng", "nhảy dù"]},
+            "mbti": {"type": "str", "required": False, "examples": ["INTJ", "ENFP"]},
+            "exclude_trait": {"type": "str", "required": False, "examples": ["hút thuốc"]},
+        },
+        "output": "JSON gồm count, results và note. Nếu count=0, agent không được bịa ứng viên.",
+    },
+    "check_dealbreakers": {
+        "description": "Kiểm tra xung đột dealbreaker giữa hai hồ sơ trước khi khuyến nghị.",
+        "inputs": {
+            "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
+            "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
+        },
+        "output": "JSON gồm person_a, person_b, conflicts và safe_to_recommend.",
+    },
+    "analyze_compatibility": {
+        "description": "Tính điểm tương thích ước tính dựa trên sở thích, mục tiêu, lifestyle, dealbreaker và độ đầy đủ dữ liệu.",
+        "inputs": {
+            "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
+            "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
+        },
+        "output": "JSON gồm score, band, evidence, cautions, data_confidence và note.",
+    },
+    "suggest_conversation_topics": {
+        "description": "Gợi ý chủ đề trò chuyện dựa trên hồ sơ thật và sở thích chung.",
+        "inputs": {
+            "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
+            "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
+        },
+        "output": "JSON gồm topics và tone.",
+    },
+}
+
+
 AVAILABLE_TOOLS = {
     "search_profiles": search_profiles,
     "check_dealbreakers": check_dealbreakers,
     "analyze_compatibility": analyze_compatibility,
-    "suggest_date_idea": suggest_date_idea,
     "suggest_conversation_topics": suggest_conversation_topics,
 }

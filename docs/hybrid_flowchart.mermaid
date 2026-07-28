@@ -18,7 +18,7 @@ flowchart TD
     J --> K{"Observation đủ và không lỗi?"}
     K -->|"Có"| L{"Cần gợi ý tiếp?"}
     L -->|"Chủ đề trò chuyện"| M["Action: suggest_conversation_topics[...]"]
-    L -->|"Buổi hẹn"| N["Action: suggest_date_idea[...]"]
+    L -->|"Buổi hẹn"| N["Final Answer dựa trên Observation, nêu rõ giới hạn tool"]
     L -->|"Không"| O["Final Answer dựa trên Observation"]
 
     M --> O
