@@ -238,16 +238,16 @@ def run_streamlit_gui():
     else:
         st.warning("💬 **Chế độ hiện tại: Baseline Chatbot** — Chỉ gọi API LLM tư vấn tổng quát, KHÔNG có khả năng sử dụng Tools.")
 
-    # Target Profile Selector (Ngay phía trên khung Chat)
+    # Active User Profile Selector (Ngay phía trên khung Chat)
     profiles = _load_mock_profiles()
-    profile_options = ["Chưa chọn đối tượng cụ thể"] + [
+    profile_options = ["Chưa chọn hồ sơ người dùng"] + [
         f"{p['name']} ({p['profile_id']}) — {p['age']} tuổi, {p['location']}, MBTI: {p.get('mbti', 'N/A')}"
         for p in profiles
     ]
 
-    st.markdown("### 🎯 Chọn Đối tượng Tìm Hiểu / Ghép Đôi:")
+    st.markdown("### 👤 Chọn Hồ Sơ Người Dùng Hiện Tại (Active User):")
     selected_p_idx = st.selectbox(
-        "Chọn một ứng viên từ Mock Data để AI tự động tập trung cá nhân hóa phân tích:",
+        "Chọn hồ sơ người dùng đang nhắn tin sử dụng hệ thống (ví dụ: Linh — USR-001):",
         options=range(len(profile_options)),
         format_func=lambda i: profile_options[i],
         index=1 if len(profiles) > 0 else 0
@@ -256,16 +256,18 @@ def run_streamlit_gui():
     selected_target = None
     if selected_p_idx > 0:
         selected_target = profiles[selected_p_idx - 1]
-        t_name = selected_target.get("name")
-        t_id = selected_target.get("profile_id")
-        t_interests = ", ".join(selected_target.get("interests", []))
-        t_traits = ", ".join(selected_target.get("personal_traits", []))
-        t_dealbreakers = ", ".join(selected_target.get("dealbreakers", []))
+        u_name = selected_target.get("name")
+        u_id = selected_target.get("profile_id")
+        u_age = selected_target.get("age")
+        u_interests = ", ".join(selected_target.get("interests", []))
+        u_traits = ", ".join(selected_target.get("personal_traits", []))
+        u_dealbreakers = ", ".join(selected_target.get("dealbreakers", []))
 
         st.success(
-            f"👤 **Đang tập trung phân tích đối tượng:** `{t_name}` (`{t_id}`)\n\n"
-            f"- **Sở thích:** {t_interests} | **MBTI:** {selected_target.get('mbti', 'N/A')} | **Khu vực:** {selected_target.get('location')}\n"
-            f"- **Đặc điểm:** {t_traits} | **Dealbreakers:** {t_dealbreakers}"
+            f"👤 **Hồ sơ Người Dùng Đang Nhắn:** `{u_name}` (`{u_id}`) — {u_age} tuổi\n\n"
+            f"- **Khu vực:** {selected_target.get('location')} | **MBTI:** {selected_target.get('mbti', 'N/A')} | **Giới tính:** {selected_target.get('gender')}\n"
+            f"- **Sở thích:** {u_interests}\n"
+            f"- **Đặc điểm:** {u_traits} | **Dealbreakers:** {u_dealbreakers}"
         )
 
     st.markdown("---")
@@ -275,7 +277,7 @@ def run_streamlit_gui():
         st.session_state.messages = [
             {
                 "role": "assistant",
-                "content": "Xin chào! Tôi là Cupid AI Assistant. Hãy chọn một ứng viên ở trên và đặt câu hỏi, tôi sẽ cá nhân hóa và gọi Tools phân tích thông tin về người đó!",
+                "content": "Xin chào! Tôi là Cupid AI Assistant. Tôi đã nắm thông tin hồ sơ của bạn. Bạn hãy đặt câu hỏi (ví dụ: 'Tôi bao nhiêu tuổi?', 'Ai phù hợp với tôi?', 'Gợi ý hẹn hò phù hợp'), tôi sẽ gọi Tools tra cứu và hỗ trợ bạn nhé!",
                 "mode_label": chat_mode,
                 "steps": []
             }
@@ -307,21 +309,24 @@ def run_streamlit_gui():
 
     # Quick prompts
     st.markdown("##### 💡 Gợi ý câu hỏi nhanh:")
-    col_s1, col_s2 = st.columns(2)
+    col_s1, col_s2, col_s3 = st.columns(3)
     with col_s1:
-        if st.button("❓ (Tool) Phân tích độ tương thích & gợi ý hẹn hò"):
-            if selected_target:
-                tname = selected_target.get("name")
-                st.session_state.sample_input = f"Hãy phân tích độ tương thích giữa tôi và {tname} trong hệ thống, sau đó gợi ý ý tưởng hẹn hò."
-            else:
-                st.session_state.sample_input = "Hãy phân tích độ tương thích giữa Linh và Hoàng trong hệ thống, sau đó gợi ý ý tưởng hẹn hò."
+        if st.button("❓ Tôi bao nhiêu tuổi & có sở thích gì?"):
+            st.session_state.sample_input = "Tôi bao nhiêu tuổi, sống ở đâu và có những sở thích gì trong hồ sơ hệ thống?"
     with col_s2:
-        if st.button("❓ (Tool) Gợi ý chủ đề trò chuyện phù hợp"):
+        if st.button("❓ (Tool) Tìm đối tượng phù hợp nhất với tôi"):
             if selected_target:
-                tname = selected_target.get("name")
-                st.session_state.sample_input = f"Hãy gợi ý cho tôi 3 chủ đề trò chuyện dễ 'bắt sóng' nhất khi nhắn tin với {tname}."
+                uname = selected_target.get("name")
+                st.session_state.sample_input = f"Hãy tìm kiếm trong hệ thống đối tượng phù hợp nhất với tôi ({uname}) và phân tích độ tương thích."
             else:
-                st.session_state.sample_input = "Nêu 3 dấu hiệu tâm lý cho thấy hai người đang có sự gắn kết lành mạnh trong giai đoạn đầu hẹn hò."
+                st.session_state.sample_input = "Hãy tìm kiếm trong hệ thống đối tượng phù hợp nhất với tôi và phân tích độ tương thích."
+    with col_s3:
+        if st.button("❓ (Tool) Gợi ý ý tưởng hẹn hò cho tôi"):
+            if selected_target:
+                uname = selected_target.get("name")
+                st.session_state.sample_input = f"Hãy gợi ý cho tôi ({uname}) ý tưởng hẹn hò phù hợp nhất dựa trên sở thích của tôi."
+            else:
+                st.session_state.sample_input = "Hãy gợi ý ý tưởng hẹn hò phù hợp nhất dựa trên sở thích của tôi."
 
     user_input = st.chat_input("Nhập câu hỏi của bạn tại đây...")
     if "sample_input" in st.session_state and st.session_state.sample_input:
@@ -337,23 +342,30 @@ def run_streamlit_gui():
         with st.chat_message("user"):
             st.write(user_input)
 
-        # Trộn ngữ cảnh Target Profile vào câu hỏi gửi tới Agent/LLM
+        # Trộn ngữ cảnh Người Dùng Hiện Tại vào câu hỏi gửi tới Agent/LLM
         if selected_target:
-            t_name = selected_target.get("name")
-            t_id = selected_target.get("profile_id")
-            t_interests = ", ".join(selected_target.get("interests", []))
-            t_mbti = selected_target.get("mbti", "N/A")
-            t_traits = ", ".join(selected_target.get("personal_traits", []))
-            t_dealbreakers = ", ".join(selected_target.get("dealbreakers", []))
+            u_name = selected_target.get("name")
+            u_id = selected_target.get("profile_id")
+            u_age = selected_target.get("age")
+            u_gender = selected_target.get("gender")
+            u_location = selected_target.get("location")
+            u_interests = ", ".join(selected_target.get("interests", []))
+            u_mbti = selected_target.get("mbti", "N/A")
+            u_traits = ", ".join(selected_target.get("personal_traits", []))
+            u_dealbreakers = ", ".join(selected_target.get("dealbreakers", []))
 
             context_query = (
-                f"[HỒ SƠ ĐỐI TƯỢNG ĐANG TÌM HIỂU/GHÉP ĐÔI]\n"
-                f"- Tên: {t_name} (Profile ID: {t_id})\n"
-                f"- Tuổi: {selected_target.get('age')} | MBTI: {t_mbti} | Khu vực: {selected_target.get('location')}\n"
-                f"- Sở thích: {t_interests}\n"
-                f"- Đặc điểm: {t_traits}\n"
-                f"- Dealbreakers: {t_dealbreakers}\n\n"
-                f"LƯU Ý QUAN TRỌNG: Mọi câu hỏi của người dùng liên quan đến đối tượng này, hãy gọi các công cụ thực tế như analyze_compatibility['User', '{t_name}'], suggest_date_idea['User', '{t_name}', 'trung bình'], hoặc suggest_conversation_topics['User', '{t_name}'] để phân tích có căn cứ từ dữ liệu hệ thống.\n\n"
+                f"[THÔNG TIN NGƯỜI DÙNG HIỆN TẠI ĐANG ĐẶT CÂU HỎI]\n"
+                f"- Tên: {u_name} (User ID / Profile ID: {u_id})\n"
+                f"- Tuổi: {u_age} | Giới tính: {u_gender} | MBTI: {u_mbti} | Nơi ở: {u_location}\n"
+                f"- Sở thích: {u_interests}\n"
+                f"- Đặc điểm cá nhân: {u_traits}\n"
+                f"- Dealbreakers (Tiêu chuẩn không chấp nhận): {u_dealbreakers}\n\n"
+                f"LƯU Ý DÀNH CHO AGENT/CHATBOT:\n"
+                f"1. Người dùng đang xưng 'tôi' / 'mình' chính là {u_name} ({u_id}).\n"
+                f"2. Nếu người dùng hỏi về bản thân (ví dụ: 'Tôi bao nhiêu tuổi?', 'Sở thích của tôi là gì?'), hãy trả lời trực tiếp dựa trên hồ sơ của {u_name} ở trên.\n"
+                f"3. Nếu người dùng hỏi 'ai phù hợp với tôi' hoặc tìm đối tượng ghép đôi, hãy tự động dùng Tool search_profiles hoặc analyze_compatibility với người dùng chính là '{u_name}' ({u_id}).\n"
+                f"4. Nếu người dùng hỏi gợi ý hẹn hò hay chủ đề trò chuyện, hãy gọi Tool suggest_date_idea hay suggest_conversation_topics với user_a là '{u_name}'.\n\n"
                 f"Câu hỏi của người dùng: {user_input}"
             )
         else:
