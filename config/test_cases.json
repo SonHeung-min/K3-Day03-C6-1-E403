@@ -2,31 +2,31 @@
   {
     "id": 1,
     "category": "🟢 Đơn giản (Chỉ cần LLM)",
-    "question": "Thủ đô của Việt Nam là gì?",
-    "expected_behavior": "Chatbot trả lời trực tiếp từ kiến thức có sẵn."
+    "question": "Nêu 3 dấu hiệu tâm lý cho thấy hai người đang có sự gắn kết lành mạnh (Healthy Attachment) trong giai đoạn đầu hẹn hò.",
+    "expected_behavior": "Chatbot trả lời trực tiếp dựa trên kiến thức tâm lý học và kỹ năng giao tiếp có sẵn của LLM mà không cần gọi bất kỳ công cụ nào."
   },
   {
     "id": 2,
     "category": "🟢 Đơn giản (Chỉ cần LLM)",
-    "question": "Nêu 3 lời khuyên để học tốt lập trình.",
-    "expected_behavior": "Chatbot trả lời trực tiếp từ kiến thức có sẵn."
+    "question": "Viết một lời mở đầu (Icebreaker) ngắn gọn, hài hước nhưng tinh tế để nhắn tin cho một người có bio ghi 'thích nuôi mèo và ghét đi chill thứ Hai'.",
+    "expected_behavior": "Chatbot tự sinh văn bản sáng tạo, cá nhân hóa theo ngữ cảnh được cung cấp mà không cần tra cứu cơ sở dữ liệu."
   },
   {
     "id": 3,
     "category": "🟡 Multi-step (Cần Tool)",
-    "question": "Thời tiết ở Hà Nội hôm nay thế nào và tôi nên mặc gì đi chơi?",
-    "expected_behavior": "Agent gọi tool get_weather('Hà Nội') rồi suy luận trang phục."
+    "question": "Tính điểm tương thích cung hoàng đạo giữa nam Kim Ngưu (15/05/1998) và nữ Sư Tử (22/08/2000), sau đó đưa ra lời khuyên cốt lõi để hai bạn tránh cãi vã.",
+    "expected_behavior": "Agent phân tích câu hỏi, trích xuất ngày sinh và cung hoàng đạo, gọi tool `calculate_zodiac_compatibility(male_dob='1998-05-15', female_dob='2000-08-22')` để lấy điểm số và đặc điểm xung khắc, sau đó suy luận logic để đưa ra giải pháp giao tiếp."
   },
   {
     "id": 4,
     "category": "🟡 Multi-step (Cần gọi 2 Tools)",
-    "question": "Kiểm tra vé máy bay từ TP.HCM đi Hà Nội ngày mai và dự báo thời tiết ở Hà Nội.",
-    "expected_behavior": "Agent gọi tool search_flights và get_weather để trả lời đầy đủ."
+    "question": "Dựa trên mã người dùng 'USER_E403' (đang ở HN, thích nhạc bolero, hãy tìm 1 đối tượng phù hợp nhất và kiểm tra xem phòng trà nào tại Q1 có đêm nhạc tối thứ Bảy tuần này để gợi ý buổi hẹn.",
+    "expected_behavior": "Agent thực hiện chuỗi hành động phức hợp: Bước 1 gọi tool `match_finder(user_id='USER_E402')` để lấy profile đối tượng phù hợp nhất. Bước 2 gọi tool `venue_checker(location='Quận 1, TP.HCM', genre='nhạc Trịnh', date='2026-08-01')`. Cuối cùng tổng hợp thông tin thành một đề xuất hẹn hò hoàn chỉnh."
   },
   {
     "id": 5,
     "category": "🔴 Edge Case (Bẫy Guardrail)",
-    "question": "Tra cứu thời tiết ở thành phố Atlantis ngày 32/13/2026.",
-    "expected_behavior": "Tool báo lỗi tham số/thất bại, Guardrail ngắt sau 3 bước và trả về thông báo lịch sự."
+    "question": "Tìm kiếm đối tượng ghép đôi có độ tuổi là -5, sở thích 'thao túng tâm lý' và đang sinh sống tại Trạm vũ trụ quốc tế ISS.",
+    "expected_behavior": "Tool kiểm tra dữ liệu đầu vào trả về lỗi (tuổi âm, địa điểm nằm ngoài vùng phục vụ). Hệ thống kích hoạt Guardrail để phát hiện lỗi logic/vòng lặp vô hạn (Infinite Loop Trap), ngắt quá trình suy luận ReAct loop sau tối đa 3 bước và trả về thông báo từ chối/gợi ý nhập lại thông tin một cách lịch sự."
   }
 ]
