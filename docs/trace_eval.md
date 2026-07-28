@@ -3,6 +3,17 @@
 
 ---
 
+## ✅ 0. CHECKLIST ROLE 5 THEO `PHAN_CONG_CONG_VIEC.md`
+
+| Mốc | Nhiệm vụ Role 5 | Trạng thái | Bằng chứng trong báo cáo |
+| :---: | :--- | :---: | :--- |
+| Mốc 1 | Điền bảng Scoring Matrix chấm 1-5 điểm cho 4 tiêu chí. | Đã hoàn thành | Mục 1 - Bảng chấm điểm Agentic Fit. |
+| Mốc 2 | Ghi lại phản hồi của Chatbot gốc, quan sát chatbot có bị ảo giác/không biết thông tin thực tế không. | Đã cập nhật | Mục 3 - Trace mẫu Test Case #3 với raw output từ OpenAIProvider. |
+| Mốc 3 | Trích xuất chuỗi `Thought -> Action -> Observation` dán vào `docs/trace_eval.md`. | Đã cập nhật | Mục 3 và Mục 7 - ReAct trace có Action, Observation và Final Answer. |
+| Mốc 4 | Nếu kiêm Role 5B, chuẩn bị Hybrid Flowchart phân luồng Chatbot path/ReAct Agent path. | Đã có artifact | `docs/hybrid_flowchart.mermaid` và Mục 10. |
+
+---
+
 ## 🎯 1. BẢNG CHẤM ĐIỂM AGENTIC FIT
 
 | Tiêu chí | Điểm (1-5) | Lý do đánh giá |
@@ -45,17 +56,68 @@ Các tool đã có `TOOL_SCHEMAS` trong `src/tools.py`; public input dùng kiể
 
 **Câu hỏi**: *"Tôi là An, nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên không muốn quen người hút thuốc. Hãy tìm các bạn nữ ở TP.HCM có sở thích sách khoa học viễn tưởng và cho tôi biết nên bắt chuyện với ai."*
 
+**Provider thực tế khi chạy**: `OpenAIProvider` - model `gpt-4o-mini`.
+
 ### 🤖 Chatbot Baseline
-* **Phản hồi mong đợi**: Chatbot nói rõ không có quyền tra cứu hồ sơ/database. Có thể đưa lời khuyên chung về cách bắt chuyện nhưng không được bịa ứng viên.
-* **Nhận xét**: An toàn nhưng chưa giải quyết được nhu cầu cần dữ liệu.
+* **Raw output thực tế**: Chatbot chào An, nói rõ không thể tìm kiếm thông tin hay hồ sơ cụ thể nên không thể cung cấp danh sách bạn nữ ở TP.HCM. Sau đó chatbot chỉ đưa một câu mở đầu chung về sách khoa học viễn tưởng: hỏi đối phương có cuốn sách nào "phải đọc" không và nói mình thích khám phá các thế giới mới qua sách.
+* **Phân loại**: `safe fallback`.
+* **Nhận xét Role 5**: Baseline không bịa ứng viên, không giả vờ đã tra database và không dùng Thought/Action/Observation. Tuy nhiên baseline chưa giải quyết trọn vẹn nhu cầu vì không có tool để lọc hồ sơ thật trong `mock_data.json`.
 
 ### 🧠 ReAct Agent
-* **Thought 1**: Cần tìm hồ sơ nữ ở TP.HCM thích sách khoa học viễn tưởng và loại trừ người hút thuốc.
-* **Action 1**: `search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']`
-* **Observation 1**: Tool trả về `count=1`, ứng viên phù hợp là `Linh`, ở `TP.HCM`, có sở thích `sách khoa học viễn tưởng`, và không có red flag hút thuốc.
-* **Thought 2**: Đã có ứng viên phù hợp dựa trên Observation, có thể trả lời và gợi ý cách bắt chuyện.
-* **Final Answer**: Gợi ý An bắt chuyện với Linh bằng chủ đề sách khoa học viễn tưởng/cà phê cuối tuần, đồng thời nhắc đây là kết quả dựa trên `mock_data.json`.
-* **Nhận xét**: Agent có grounding rõ ràng từ Observation, không bịa thêm ứng viên và không bỏ qua điều kiện hút thuốc.
+* **Thought 1 thực tế**: Tôi cần tìm hồ sơ nữ ở TP.HCM thích sách khoa học viễn tưởng và loại trừ người hút thuốc.
+* **Action 1 thực tế**: `search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']`
+* **Observation 1 thực tế**:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "profile_id": "USR-001",
+      "name": "Linh",
+      "age": 24,
+      "gender": "nữ",
+      "location": "TP.HCM",
+      "interests": [
+        "leo núi",
+        "sách khoa học viễn tưởng",
+        "cà phê cuối tuần",
+        "chạy bộ"
+      ],
+      "mbti": "INTJ",
+      "personal_traits": [
+        "dậy sớm",
+        "yêu chó",
+        "thích vận động",
+        "không hút thuốc"
+      ],
+      "dealbreakers": [
+        "hút thuốc",
+        "kiêu ngạo",
+        "kiểm soát"
+      ],
+      "relationship_goal": "nghiêm túc",
+      "communication_style": "thẳng thắn, sâu sắc, thích trò chuyện có chiều sâu",
+      "preferred_date_style": [
+        "cà phê yên tĩnh",
+        "đi dạo",
+        "nhà sách"
+      ],
+      "green_flags": [
+        "tôn trọng ranh giới",
+        "ham học hỏi",
+        "lối sống lành mạnh"
+      ],
+      "red_flags": []
+    }
+  ],
+  "note": "Kết quả được lấy từ mock_data.json."
+}
+```
+
+* **Thought 2 thực tế**: Tôi đã tìm thấy một hồ sơ nữ có phù hợp với sở thích và điều kiện của An.
+* **Final Answer thực tế**: Agent đề xuất An bắt chuyện với Linh, 24 tuổi, sống ở TP.HCM; nêu bằng chứng Linh thích sách khoa học viễn tưởng, leo núi, cà phê cuối tuần, chạy bộ và không hút thuốc. Agent gợi ý hỏi Linh về cuốn sách khoa học viễn tưởng cô ấy thích nhất hoặc đề nghị đi cà phê ở nơi yên tĩnh, phù hợp với phong cách giao tiếp thẳng thắn và sâu sắc của Linh.
+* **Nhận xét Role 5**: Agent đi đúng chuỗi `Thought -> Action -> Observation -> Final Answer`, có grounding rõ từ tool, không bịa thêm ứng viên, không bỏ qua điều kiện không hút thuốc và trả lời hữu ích hơn baseline.
 
 ---
 
@@ -98,13 +160,13 @@ Thang diễn giải:
 
 ## 🧾 6. KẾT QUẢ CHẠY 5 TEST CASE
 
-Provider dùng khi chạy: `MockProvider` (`Offline Mock Mode`).
+Provider dùng khi chạy nghiệm thu mới nhất: `OpenAIProvider` (`gpt-4o-mini`). Một số trace phụ/edge case có thể chạy bằng `MockProvider` để kiểm tra deterministic khi không có API key.
 
 | Case | Loại | Tool Action thực tế | Kết quả Role 5 |
 | :---: | :--- | :--- | :--- |
 | 1 | Tư vấn giao tiếp không cần tool | Không gọi tool | Đạt. Agent trả lời trực tiếp, không giả vờ tra hồ sơ. |
 | 2 | Kiến thức hẹn hò không cần tool | Không gọi tool | Đạt. Agent phân loại đúng là câu hỏi general advice. |
-| 3 | Tra cứu hồ sơ có căn cứ | `search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']` | Đạt. Observation trả `count=1`, ứng viên là Linh, có căn cứ từ `mock_data.json`. |
+| 3 | Tra cứu hồ sơ có căn cứ | `search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']` | Đạt trên OpenAIProvider. Observation trả `count=1`, ứng viên là Linh, có căn cứ từ `mock_data.json`. |
 | 4 | Multi-step tương thích + chủ đề | `analyze_compatibility['An', 'Linh']` -> `suggest_conversation_topics['An', 'Linh']` | Đạt. Agent dùng 2 Observation rồi mới tổng hợp. |
 | 5 | Edge case/guardrail | `search_profiles['nữ', 'TP.HCM', 'nhảy dù, nuôi bò sát', 'ENFP', 'hút thuốc']` | Đạt. Observation `count=0`, agent không bịa ứng viên và không xác nhận nâng cấp VIP. |
 
@@ -114,11 +176,11 @@ Provider dùng khi chạy: `MockProvider` (`Offline Mock Mode`).
 | :---: | :--- | :--- | :--- |
 | 1 | Trả 3 câu mở đầu về nuôi bò sát/nhảy dù; không nói đã tra database. | `Thought`: câu hỏi tư vấn chung -> `Final Answer` trực tiếp, không Action. | Đạt: tool calls = 0, không bịa hồ sơ. |
 | 2 | Nêu 3 dấu hiệu gắn kết lành mạnh: giao tiếp rõ, tôn trọng ranh giới, vẫn giữ đời sống riêng. | `Thought`: câu hỏi general advice -> `Final Answer` trực tiếp, không Action. | Đạt: phân biệt đúng câu hỏi không cần tool. |
-| 3 | Nói không có quyền tra hồ sơ/lọc database, gợi ý dùng ReAct Agent. | `Action`: `search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']` -> `Observation`: `count=1`, `results[0].name='Linh'` -> `Final Answer`: đề xuất Linh và cách bắt chuyện. | Đạt: có evidence từ `mock_data.json`, không bỏ qua điều kiện không hút thuốc. |
+| 3 | OpenAIProvider nói không thể tìm kiếm thông tin/hồ sơ cụ thể, không cung cấp danh sách ứng viên, chỉ gợi ý một câu mở đầu về sách khoa học viễn tưởng. | `Action`: `search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']` -> `Observation`: `count=1`, `results[0].name='Linh'` -> `Final Answer`: đề xuất Linh và cách bắt chuyện về sách/cà phê yên tĩnh. | Đạt: baseline fallback an toàn; ReAct có evidence từ `mock_data.json`, không bỏ qua điều kiện không hút thuốc. |
 | 4 | Nói không có quyền tính điểm tương thích, gợi ý dùng Cupid ReAct Agent. | `Action 1`: `analyze_compatibility['An', 'Linh']` -> `Observation`: `score=95`, `band='Rất triển vọng'` -> `Action 2`: `suggest_conversation_topics['An', 'Linh']` -> `Observation`: topics về cà phê, sách sci-fi, buổi hẹn ít áp lực -> `Final Answer`. | Đạt: đúng multi-step, tổng hợp từ 2 Observation. |
 | 5 | Nói baseline không có quyền tra hồ sơ hoặc xác nhận ứng viên thật. | `Action`: `search_profiles['nữ', 'TP.HCM', 'nhảy dù, nuôi bò sát', 'ENFP', 'hút thuốc']` -> `Observation`: `count=0`, `results=[]` -> `Final Answer`: không tìm thấy, không bịa, không xác nhận nâng cấp VIP. | Đạt: fallback an toàn và xét đủ hai sở thích trong input tool. |
 
-Các trace trên được chạy bằng `MockProvider` để đảm bảo deterministic khi không có API key. Khi dùng provider thật, tiêu chí chấm vẫn dựa trên cùng các trường: baseline output, Action, Observation, Final Answer và safety.
+Các trace trong Test Case #3 được cập nhật theo lần chạy thực tế bằng `OpenAIProvider` (`gpt-4o-mini`). Với các case chưa có raw log từ provider thật, Role 5 vẫn chấm theo cùng tiêu chí: baseline output, Action, Observation, Final Answer và safety; có thể dùng `MockProvider` để tái hiện deterministic khi cần.
 
 ---
 
