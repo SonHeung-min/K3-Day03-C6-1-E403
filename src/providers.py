@@ -133,11 +133,40 @@ class OpenRouterProvider(BaseLLMProvider):
 
 class MockProvider(BaseLLMProvider):
     """Offline Mock Provider (Cho bài test không cần kết nối API)"""
+    def __init__(self):
+        self.model_name = "Offline Mock Mode"
+
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         text = prompt.lower()
-        if "thời tiết" in text and "hà nội" in text:
-            return "Thought: Cần tra cứu thời tiết Hà Nội.\nAction: get_weather['Hà Nội']"
-        return "🤖 [Mock Provider]: Phản hồi giả lập offline cho bài test."
+        # Nếu là Chatbot Baseline
+        if "baseline" in system_prompt.lower() or "chatbot" in system_prompt.lower():
+            return "Tôi là Cupid Chatbot. Rất vui được hỗ trợ bạn về lời khuyên tình cảm và hẹn hò!"
+        
+        # Nếu là ReAct Agent và đã có Observation trong chat history
+        if "observation:" in text:
+            return (
+                "Thought: Tôi đã có đủ Observation để đưa ra kết luận có căn cứ.\n"
+                "Final Answer: Phân tích cho thấy hai bạn có nền tảng tương đối phù hợp. "
+                "Nên bắt đầu cuộc trò chuyện tự nhiên về sở thích chung hoặc kế hoạch cuối tuần!"
+            )
+            
+        # ReAct Agent bước đầu tiên: sinh Action
+        if "gắn kết" in text or "icebreaker" in text:
+            return (
+                "Thought: Đây là câu hỏi tư vấn chung, không cần tra cứu hồ sơ.\n"
+                "Final Answer: Gắn kết lành mạnh thể hiện qua: 1. Giao tiếp cởi mở, 2. Tôn trọng ranh giới cá nhân, 3. Cùng nỗ lực lắng nghe."
+            )
+        
+        if "thao túng" in text or "iss" in text or "-5" in text:
+            return (
+                "Thought: Đầu vào không hợp lệ hoặc có dấu hiệu bẫy logic.\n"
+                "Action: analyze_compatibility['USR-999', 'ISS-Station']"
+            )
+
+        return (
+            "Thought: Cần phân tích độ tương thích dựa trên hồ sơ có sẵn.\n"
+            "Action: analyze_compatibility['Linh', 'Hoàng']"
+        )
 
 
 def get_llm_provider(provider_name: str = None) -> BaseLLMProvider:
