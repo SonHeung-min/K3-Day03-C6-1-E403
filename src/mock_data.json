@@ -1,0 +1,118 @@
+[
+    {
+        "profile_id": "USR-001",
+        "name": "Linh",
+        "age": 24,
+        "gender": "female",
+        "location": "Ho Chi Minh City",
+        "interests": [
+            "leo núi",
+            "đọc sách sci-fi",
+            "cà phê cuối tuần",
+            "chạy bộ"
+        ],
+        "mbti": "INTJ",
+        "personal_traits": [
+            "early_bird",
+            "dog_lover",
+            "fitness_enthusiast"
+        ],
+        "dealbreakers": [
+            "smokes",
+            "arrogant"
+        ]
+    },
+    {
+        "profile_id": "USR-002",
+        "name": "Mai",
+        "age": 25,
+        "gender": "female",
+        "location": "Ho Chi Minh City",
+        "interests": [
+            "nấu ăn",
+            "đọc sách sci-fi",
+            "xem phim nghệ thuật",
+            "cắm hoa"
+        ],
+        "mbti": "ENFP",
+        "personal_traits": [
+            "smokes",
+            "extrovert",
+            "cat_lover",
+            "night_owl"
+        ],
+        "dealbreakers": [
+            "dislikes_pets",
+            "controlling"
+        ]
+    },
+    {
+        "profile_id": "USR-003",
+        "name": "Hoàng",
+        "age": 26,
+        "gender": "male",
+        "location": "Ha Noi",
+        "interests": [
+            "tập gym",
+            "xem UFC",
+            "công nghệ",
+            "code dạo"
+        ],
+        "mbti": "ISTP",
+        "personal_traits": [
+            "fitness_enthusiast",
+            "tech_savvy",
+            "non_smoker"
+        ],
+        "dealbreakers": [
+            "smokes",
+            "lazy",
+            "dislikes_sports"
+        ]
+    },
+    {
+        "profile_id": "USR-004",
+        "name": "Trang",
+        "age": 22,
+        "gender": "female",
+        "location": "Ho Chi Minh City",
+        "interests": [
+            "du lịch bụi",
+            "chụp ảnh phim",
+            "nuôi bò sát",
+            "nhảy dù"
+        ],
+        "mbti": "ISFP",
+        "personal_traits": [
+            "exotic_pet_owner",
+            "adventurous",
+            "non_smoker"
+        ],
+        "dealbreakers": [
+            "homebody",
+            "traditional"
+        ]
+    },
+    {
+        "profile_id": "USR-005",
+        "name": "Khánh",
+        "age": 27,
+        "gender": "male",
+        "location": "Da Nang",
+        "interests": [
+            "đầu tư tài chính",
+            "chơi golf",
+            "rượu vang",
+            "nghe nhạc jazz"
+        ],
+        "mbti": "ENTJ",
+        "personal_traits": [
+            "ambitious",
+            "smokes",
+            "workaholic"
+        ],
+        "dealbreakers": [
+            "lack_of_ambition"
+        ]
+    }
+]
