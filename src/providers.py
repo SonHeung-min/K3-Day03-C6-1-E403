@@ -173,7 +173,7 @@ class MockProvider(BaseLLMProvider):
             if '"results"' in text:
                 return (
                     "Thought: Observation đã trả về hồ sơ phù hợp và đã loại trừ người hút thuốc.\n"
-                    "Final Answer: Dựa trên dữ liệu hiện có, Linh là lựa chọn hợp lý nhất vì ở TP.HCM, thích đọc sách sci-fi và có trait non_smoker. Bạn có thể bắt chuyện bằng một câu nhẹ như: 'Nếu được chọn một thế giới sci-fi để đi cà phê cuối tuần, bạn chọn nơi nào?'"
+                    "Final Answer: Dựa trên dữ liệu hiện có, Linh là lựa chọn hợp lý nhất vì ở TP.HCM, thích sách khoa học viễn tưởng và không có red flag hút thuốc. Bạn có thể bắt chuyện bằng một câu nhẹ như: 'Nếu được chọn một thế giới khoa học viễn tưởng để đi cà phê cuối tuần, bạn chọn nơi nào?'"
                 )
             if '"topics"' in text:
                 return (
