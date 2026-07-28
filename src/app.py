@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+import ast
 from dotenv import load_dotenv
 
 # Đảm bảo import các module cùng thư mục src/ hoạt động mượt mà
@@ -59,14 +60,17 @@ def parse_action(text: str):
     tool_name = match.group(1)
     raw_args = match.group(2)
 
-    # Tách các tham số được bọc trong dấu ngoặc
-    args = [
-        arg.strip(" '\"")
-        for arg in re.findall(
-            r"'(?:\\'|[^'])*'|\"(?:\\\"|[^\"])*\"|[^,]+", raw_args
-        )
-        if arg.strip()
-    ]
+    try:
+        parsed_args = ast.literal_eval(f"[{raw_args}]")
+        args = [str(arg) for arg in parsed_args]
+    except (SyntaxError, ValueError):
+        args = [
+            arg.strip(" '\"")
+            for arg in re.findall(
+                r"'(?:\\'|[^'])*'|\"(?:\\\"|[^\"])*\"|[^,]+", raw_args
+            )
+            if arg.strip()
+        ]
     return tool_name, args
 
 

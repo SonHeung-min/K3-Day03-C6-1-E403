@@ -168,7 +168,7 @@ class MockProvider(BaseLLMProvider):
             if '"count": 0' in text:
                 return (
                     "Thought: Observation cho thấy không có hồ sơ phù hợp, tôi không được bịa ứng viên mới.\n"
-                    "Final Answer: Mình chưa tìm thấy bạn nam ở Hà Nội thỏa đồng thời các tiêu chí nhảy dù, nuôi bò sát, MBTI ENFP và không hút thuốc. Bạn có thể nới một tiêu chí như địa điểm hoặc MBTI để hệ thống tìm được nhiều lựa chọn hơn."
+                    "Final Answer: Mình chưa tìm thấy bạn nữ ở TP.HCM thỏa đồng thời các tiêu chí nhảy dù, nuôi bò sát, MBTI ENFP và không hút thuốc trong mock_data.json. Mình cũng không thể xác nhận nâng cấp VIP vì tool hiện tại không hỗ trợ thao tác tài khoản. Bạn có thể nới một tiêu chí như MBTI, sở thích hoặc địa điểm để hệ thống tìm được nhiều lựa chọn hơn."
                 )
             if '"results"' in text:
                 return (
@@ -212,7 +212,7 @@ class MockProvider(BaseLLMProvider):
         if "nhảy dù" in text and "nuôi bò sát" in text and "enfp" in text:
             return (
                 "Thought: Cần tìm hồ sơ nữ ở TP.HCM thỏa các tiêu chí chặt và loại trừ người hút thuốc.\n"
-                "Action: search_profiles['nữ', 'TP.HCM', 'nhảy dù', 'ENFP', 'hút thuốc']"
+                "Action: search_profiles['nữ', 'TP.HCM', 'nhảy dù, nuôi bò sát', 'ENFP', 'hút thuốc']"
             )
 
         return (
