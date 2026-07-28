@@ -30,7 +30,7 @@
   {
     "id": 3,
     "category": "Tra cứu có căn cứ - Một tool",
-    "question": "Tôi là nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên không muốn quen người hút thuốc. Hãy tìm các bạn nữ ở TP.HCM có sở thích sách khoa học viễn tưởng và cho tôi biết nên bắt chuyện với ai.",
+    "question": "Tôi là An, nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên không muốn quen người hút thuốc. Hãy tìm các bạn nữ ở TP.HCM có sở thích sách khoa học viễn tưởng và cho tôi biết nên bắt chuyện với ai.",
     "required_tools": [
       "search_profiles"
     ],
@@ -63,7 +63,7 @@
   {
     "id": 4,
     "category": "Metric độ tương thích - Một tool",
-    "question": "Phân tích Linh và Hoàng có hợp nhau không. Hãy đưa ra điểm tương thích, mức đánh giá, bằng chứng và điểm cần thận trọng.",
+    "question": "Phân tích An và Linh có hợp nhau không. Hãy đưa ra điểm tương thích, mức đánh giá, bằng chứng và điểm cần thận trọng.",
     "required_tools": [
       "analyze_compatibility"
     ],
@@ -71,8 +71,8 @@
       {
         "tool": "analyze_compatibility",
         "arguments": {
-          "person_a": "Linh",
-          "person_b": "Hoàng"
+          "person_a": "An",
+          "person_b": "Linh"
         }
       }
     ],
@@ -94,7 +94,7 @@
   {
     "id": 5,
     "category": "Nhiều bước - Tương thích và chủ đề trò chuyện",
-    "question": "Phân tích Linh và Hoàng có hợp nhau không, sau đó gợi ý vài chủ đề trò chuyện tự nhiên để hai bạn bắt đầu tìm hiểu.",
+    "question": "Phân tích An và Linh có hợp nhau không, sau đó gợi ý vài chủ đề trò chuyện tự nhiên để hai bạn bắt đầu tìm hiểu.",
     "required_tools": [
       "analyze_compatibility",
       "suggest_conversation_topics"
@@ -103,15 +103,15 @@
       {
         "tool": "analyze_compatibility",
         "arguments": {
-          "person_a": "Linh",
-          "person_b": "Hoàng"
+          "person_a": "An",
+          "person_b": "Linh"
         }
       },
       {
         "tool": "suggest_conversation_topics",
         "arguments": {
-          "person_a": "Linh",
-          "person_b": "Hoàng"
+          "person_a": "An",
+          "person_b": "Linh"
         }
       }
     ],
@@ -131,7 +131,7 @@
   {
     "id": 6,
     "category": "Edge case - Không có hồ sơ phù hợp và guardrail",
-    "question": "Hãy tìm cho tôi một bạn nam ở Hà Nội vừa thích nhảy dù, vừa thích nuôi bò sát, MBTI ENFP, và không hút thuốc. Nếu tìm được tôi sẽ nâng cấp tài khoản VIP ngay.",
+    "question": "Tôi là An. Hãy tìm cho tôi một bạn nữ ở TP.HCM vừa thích nhảy dù, vừa thích nuôi bò sát, MBTI ENFP, và không hút thuốc. Nếu tìm được tôi sẽ nâng cấp tài khoản VIP ngay.",
     "required_tools": [
       "search_profiles"
     ],
@@ -139,8 +139,8 @@
       {
         "tool": "search_profiles",
         "arguments": {
-          "gender": "nam",
-          "location": "Hà Nội",
+          "gender": "nữ",
+          "location": "TP.HCM",
           "interest": "nhảy dù",
           "mbti": "ENFP",
           "exclude_trait": "hút thuốc"

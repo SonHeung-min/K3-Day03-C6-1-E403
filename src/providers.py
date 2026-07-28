@@ -178,12 +178,12 @@ class MockProvider(BaseLLMProvider):
             if '"topics"' in text:
                 return (
                     "Thought: Tôi đã có Observation về độ tương thích và chủ đề trò chuyện.\n"
-                    "Final Answer: Linh và Hoàng có vài điểm chung đủ để bắt đầu tìm hiểu, đặc biệt ở lối sống kỷ luật và hoạt động lành mạnh. Chủ đề nên mở đầu nhẹ bằng sở thích cuối tuần, cách cân bằng công việc-cuộc sống, hoặc một buổi đi bộ/cà phê yên tĩnh."
+                    "Final Answer: An và Linh có nhiều điểm chung tốt để bắt đầu tìm hiểu, đặc biệt là mục tiêu nghiêm túc, sách khoa học viễn tưởng, cà phê cuối tuần và nhịp trò chuyện sâu. Chủ đề nên mở đầu nhẹ bằng sách, thói quen cuối tuần, hoặc một buổi cà phê yên tĩnh."
                 )
             if '"score"' in text and "suggest_conversation_topics" not in text:
                 return (
                     "Thought: Đã có điểm tương thích, cần thêm chủ đề trò chuyện để câu trả lời hữu ích hơn.\n"
-                    "Action: suggest_conversation_topics['Linh', 'Hoàng']"
+                    "Action: suggest_conversation_topics['An', 'Linh']"
                 )
             return (
                 "Thought: Tôi đã có đủ Observation để đưa ra kết luận có căn cứ.\n"
@@ -197,27 +197,27 @@ class MockProvider(BaseLLMProvider):
                 "Final Answer: Đây là câu hỏi có thể trả lời trực tiếp bằng kiến thức giao tiếp chung, không cần gọi tool."
             )
         
-        if "hút thuốc" in text and "đọc sách sci-fi" in text:
+        if "hút thuốc" in text and ("sách khoa học viễn tưởng" in text or "đọc sách sci-fi" in text):
             return (
-                "Thought: Cần tìm nữ ở Ho Chi Minh City thích đọc sách sci-fi và loại trừ trait smokes.\n"
-                "Action: search_profiles['female', 'Ho Chi Minh City', 'đọc sách sci-fi', '', 'smokes']"
+                "Thought: Cần tìm nữ ở TP.HCM thích sách khoa học viễn tưởng và loại trừ người hút thuốc.\n"
+                "Action: search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']"
             )
 
-        if "linh" in text and "hoàng" in text:
+        if "an" in text and "linh" in text:
             return (
-                "Thought: Cần phân tích độ tương thích giữa Linh và Hoàng trước.\n"
-                "Action: analyze_compatibility['Linh', 'Hoàng']"
+                "Thought: Cần phân tích độ tương thích giữa An và Linh trước.\n"
+                "Action: analyze_compatibility['An', 'Linh']"
             )
 
         if "nhảy dù" in text and "nuôi bò sát" in text and "enfp" in text:
             return (
-                "Thought: Cần tìm hồ sơ nam ở Ha Noi thỏa các tiêu chí chặt và loại trừ người hút thuốc.\n"
-                "Action: search_profiles['male', 'Ha Noi', 'nhảy dù', 'ENFP', 'smokes']"
+                "Thought: Cần tìm hồ sơ nữ ở TP.HCM thỏa các tiêu chí chặt và loại trừ người hút thuốc.\n"
+                "Action: search_profiles['nữ', 'TP.HCM', 'nhảy dù', 'ENFP', 'hút thuốc']"
             )
 
         return (
             "Thought: Cần phân tích độ tương thích dựa trên hồ sơ có sẵn.\n"
-            "Action: analyze_compatibility['Linh', 'Hoàng']"
+            "Action: analyze_compatibility['An', 'Linh']"
         )
 
 

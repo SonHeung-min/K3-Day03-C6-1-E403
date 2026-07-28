@@ -78,17 +78,17 @@ Ví dụ:
 Thought: Tôi cần tìm hồ sơ nữ ở TP.HCM thích sách khoa học viễn tưởng và loại trừ người hút thuốc.
 Action: search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']
 
-Thought: Tôi cần ước tính độ tương thích giữa Linh và Hoàng.
-Action: analyze_compatibility['Linh', 'Hoàng']
+Thought: Tôi cần ước tính độ tương thích giữa An và Linh.
+Action: analyze_compatibility['An', 'Linh']
 
 Thought: Tôi cần kiểm tra dealbreaker trước khi khuyến nghị Mai cho Linh.
 Action: check_dealbreakers['Linh', 'Mai']
 
 Thought: Tôi đã có kết quả tương thích và cần gợi ý buổi hẹn ngân sách trung bình.
-Action: suggest_date_idea['Linh', 'Hoàng', 'trung bình']
+Action: suggest_date_idea['An', 'Linh', 'trung bình']
 
 Thought: Tôi đã có ngữ cảnh tương thích và cần gợi ý chủ đề trò chuyện tự nhiên.
-Action: suggest_conversation_topics['Linh', 'Hoàng']
+Action: suggest_conversation_topics['An', 'Linh']
 
 ĐỊNH DẠNG KHI ĐỦ DỮ LIỆU TRẢ LỜI:
 Thought: Tôi đã có đủ Observation để trả lời có căn cứ.

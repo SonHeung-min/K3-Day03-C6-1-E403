@@ -244,13 +244,17 @@ def run_streamlit_gui():
         f"{p['name']} ({p['profile_id']}) — {p['age']} tuổi, {p['location']}, MBTI: {p.get('mbti', 'N/A')}"
         for p in profiles
     ]
+    default_profile_idx = next(
+        (idx + 1 for idx, profile in enumerate(profiles) if profile.get("name") == "An"),
+        1 if profiles else 0
+    )
 
     st.markdown("### 👤 Chọn Hồ Sơ Người Dùng Hiện Tại (Active User):")
     selected_p_idx = st.selectbox(
-        "Chọn hồ sơ người dùng đang nhắn tin sử dụng hệ thống (ví dụ: Linh — USR-001):",
+        "Chọn hồ sơ người dùng đang nhắn tin sử dụng hệ thống (ví dụ: An — USR-006):",
         options=range(len(profile_options)),
         format_func=lambda i: profile_options[i],
-        index=1 if len(profiles) > 0 else 0
+        index=default_profile_idx
     )
 
     selected_target = None
