@@ -24,6 +24,7 @@ if sys.stdout.encoding != 'utf-8':
 from tools import (
     AVAILABLE_TOOLS,
     analyze_compatibility,
+    suggest_date_idea,
     suggest_conversation_topics,
     _load_mock_profiles,
 )
@@ -368,7 +369,7 @@ def run_streamlit_gui():
                 f"1. Người dùng đang xưng 'tôi' / 'mình' chính là {u_name} ({u_id}).\n"
                 f"2. Nếu người dùng hỏi về bản thân (ví dụ: 'Tôi bao nhiêu tuổi?', 'Sở thích của tôi là gì?'), hãy trả lời trực tiếp dựa trên hồ sơ của {u_name} ở trên.\n"
                 f"3. Nếu người dùng hỏi 'ai phù hợp với tôi' hoặc tìm đối tượng ghép đôi, hãy tự động dùng Tool search_profiles hoặc analyze_compatibility với người dùng chính là '{u_name}' ({u_id}).\n"
-                f"4. Nếu người dùng hỏi gợi ý chủ đề trò chuyện cá nhân hóa, hãy gọi Tool suggest_conversation_topics với user_a là '{u_name}'. Nếu hỏi ý tưởng hẹn hò nhưng tool không hỗ trợ trực tiếp, hãy trả lời dựa trên Observation đã có và nói rõ giới hạn.\n\n"
+                f"4. Nếu người dùng hỏi gợi ý hẹn hò hay chủ đề trò chuyện, hãy gọi Tool suggest_date_idea hoặc suggest_conversation_topics với user_a là '{u_name}'.\n\n"
                 f"Câu hỏi của người dùng: {user_input}"
             )
         else:
