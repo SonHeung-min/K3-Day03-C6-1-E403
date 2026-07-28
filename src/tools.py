@@ -376,6 +376,7 @@ def suggest_date_idea(person_a: str, person_b: str, budget: str = "trung bình")
 TOOL_SCHEMAS = {
     "search_profiles": {
         "description": "Tìm hồ sơ ứng viên theo bộ lọc có căn cứ từ mock_data.json. Nếu có nhiều sở thích, gộp vào tham số interest bằng dấu phẩy, ví dụ 'nấu ăn, cắm hoa'.",
+        "purpose": "Dùng khi người dùng muốn tìm ứng viên theo giới tính, địa điểm, sở thích, MBTI hoặc điều kiện loại trừ.",
         "inputs": {
             "gender": {"type": "str", "required": True, "examples": ["nữ", "nam"]},
             "location": {"type": "str", "required": True, "examples": ["TP.HCM", "Hà Nội", "Đà Nẵng"]},
@@ -384,39 +385,63 @@ TOOL_SCHEMAS = {
             "exclude_trait": {"type": "str", "required": False, "examples": ["hút thuốc"]},
         },
         "output": "JSON gồm count, results và note. Nếu count=0, agent không được bịa ứng viên.",
+        "error_semantics": "Trả count=0 và note an toàn khi không có hồ sơ phù hợp; không raise exception nghiệp vụ.",
+        "side_effect": "Read-only, chỉ đọc mock_data.json.",
+        "example": "search_profiles['nữ', 'TP.HCM', 'nhảy dù, nuôi bò sát', 'ENFP', 'hút thuốc'] -> JSON count/results/note.",
+        "safety": "Không tự tạo hồ sơ mới; không trả dữ liệu ngoài các trường summary cho phép.",
     },
     "check_dealbreakers": {
         "description": "Kiểm tra xung đột dealbreaker giữa hai hồ sơ trước khi khuyến nghị.",
+        "purpose": "Dùng trước khi khuyến nghị một cặp nếu cần kiểm tra điểm loại trừ rõ ràng.",
         "inputs": {
             "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
             "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
         },
         "output": "JSON gồm person_a, person_b, conflicts và safe_to_recommend.",
+        "error_semantics": "Trả chuỗi ERROR nếu thiếu hoặc sai name/profile_id.",
+        "side_effect": "Read-only, chỉ đọc mock_data.json.",
+        "example": "check_dealbreakers['An', 'Mai'] -> JSON conflicts/safe_to_recommend.",
+        "safety": "Nếu có conflict, agent phải cảnh báo nhẹ và không ép khuyến nghị tích cực.",
     },
     "analyze_compatibility": {
         "description": "Tính điểm tương thích ước tính dựa trên sở thích, mục tiêu, lifestyle, dealbreaker và độ đầy đủ dữ liệu.",
+        "purpose": "Dùng khi người dùng hỏi hai hồ sơ cụ thể có hợp nhau không hoặc cần điểm tương thích.",
         "inputs": {
             "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
             "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
         },
         "output": "JSON gồm score, band, evidence, cautions, data_confidence và note.",
+        "error_semantics": "Trả chuỗi ERROR nếu không tìm thấy đủ hai hồ sơ.",
+        "side_effect": "Read-only, chỉ đọc mock_data.json và gọi check_dealbreakers nội bộ.",
+        "example": "analyze_compatibility['An', 'Linh'] -> JSON score/band/evidence/cautions.",
+        "safety": "Score là ước tính theo dữ liệu hiện có, không được diễn giải như kết luận chắc chắn.",
     },
     "suggest_conversation_topics": {
         "description": "Gợi ý chủ đề trò chuyện dựa trên hồ sơ thật và sở thích chung.",
+        "purpose": "Dùng sau khi đã biết hai hồ sơ cụ thể và cần gợi ý cách bắt chuyện cá nhân hóa.",
         "inputs": {
             "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
             "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
         },
         "output": "JSON gồm topics và tone.",
+        "error_semantics": "Trả chuỗi ERROR nếu không tìm thấy đủ hai hồ sơ.",
+        "side_effect": "Read-only, chỉ đọc mock_data.json.",
+        "example": "suggest_conversation_topics['An', 'Linh'] -> JSON topics/tone.",
+        "safety": "Chủ đề phải tôn trọng, ít áp lực, không suy luận thông tin riêng tư.",
     },
     "suggest_date_idea": {
         "description": "Gợi ý buổi hẹn dựa trên kiểu hẹn ưa thích, sở thích chung và ngân sách.",
+        "purpose": "Dùng khi người dùng muốn một ý tưởng hẹn hò cụ thể cho hai hồ sơ đã xác định.",
         "inputs": {
             "person_a": {"type": "str", "required": True, "examples": ["An", "USR-006"]},
             "person_b": {"type": "str", "required": True, "examples": ["Linh", "USR-001"]},
             "budget": {"type": "str", "required": False, "examples": ["thấp", "trung bình", "cao"]},
         },
         "output": "JSON gồm idea, budget và why.",
+        "error_semantics": "Trả chuỗi ERROR nếu không tìm thấy đủ hai hồ sơ.",
+        "side_effect": "Read-only, không đặt lịch, không thanh toán, không gửi lời mời thật.",
+        "example": "suggest_date_idea['An', 'Linh', 'trung bình'] -> JSON idea/budget/why.",
+        "safety": "Không tuyên bố đã đặt chỗ hoặc thực hiện action ngoài phạm vi tool.",
     },
 }
 
