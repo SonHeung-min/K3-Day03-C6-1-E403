@@ -24,18 +24,18 @@ def reactive_agent_step(user_goal: str):
     print(f"🎯 Goal: {user_goal}")
 
     print("\n🧠 [Thought 1]: Cần phân tích độ tương thích dựa trên hồ sơ.")
-    print("🛠️ [Action 1] : analyze_compatibility('Linh', 'Hoàng')")
-    obs1 = analyze_compatibility("Linh", "Hoàng")
+    print("🛠️ [Action 1] : analyze_compatibility('An', 'Linh')")
+    obs1 = analyze_compatibility("An", "Linh")
     print(f"👁️ [Observation 1]: {obs1}")
 
     print("\n🧠 [Thought 2]: Cần thêm chủ đề trò chuyện để câu trả lời hữu ích.")
-    print("🛠️ [Action 2] : suggest_conversation_topics('Linh', 'Hoàng')")
-    obs2 = suggest_conversation_topics("Linh", "Hoàng")
+    print("🛠️ [Action 2] : suggest_conversation_topics('An', 'Linh')")
+    obs2 = suggest_conversation_topics("An", "Linh")
     print(f"👁️ [Observation 2]: {obs2}")
 
-    print("\n🏁 [Final Answer]: Linh và Hoàng có điểm chung đủ để tìm hiểu thêm. Nên mở đầu bằng chủ đề cuối tuần hoặc một buổi đi bộ/cà phê yên tĩnh.")
+    print("\n🏁 [Final Answer]: An và Linh có nhiều điểm chung đủ để tìm hiểu thêm. Nên mở đầu bằng chủ đề sách khoa học viễn tưởng, cà phê cuối tuần hoặc một buổi đi bộ/nhà sách.")
 
 
 if __name__ == "__main__":
     print("=== DEMO CẤP ĐỘ 3: CUPID REACT AGENT ===")
-    reactive_agent_step("Phân tích Linh và Hoàng có hợp nhau không?")
+    reactive_agent_step("Phân tích An và Linh có hợp nhau không?")
