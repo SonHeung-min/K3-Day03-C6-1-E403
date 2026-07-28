@@ -75,12 +75,12 @@ Thang diễn giải:
 
 ## 🧠 5. REACT AGENT TRACE LOG (MỐC 3)
 
-**Câu hỏi**: *"Tôi là nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên tuyệt đối không muốn quen người hút thuốc. Hãy quét hệ thống tìm cho tôi các bạn nữ ở TP.HCM có sở thích 'đọc sách sci-fi'. Phân tích xem tôi nên bắt chuyện với ai là hợp lý nhất?"*
+**Câu hỏi**: *"Tôi là An, nam, sống ở TP.HCM. Tôi ghét mùi thuốc lá nên không muốn quen người hút thuốc. Hãy tìm các bạn nữ ở TP.HCM có sở thích sách khoa học viễn tưởng và cho tôi biết nên bắt chuyện với ai."*
 
 ### Chuỗi Thought -> Action -> Observation
 
-* **Thought 1**: Cần tìm nữ ở Ho Chi Minh City thích đọc sách sci-fi và loại trừ trait smokes.
-* **Action 1**: `search_profiles['female', 'Ho Chi Minh City', 'đọc sách sci-fi', '', 'smokes']`
+* **Thought 1**: Cần tìm nữ ở TP.HCM thích sách khoa học viễn tưởng và loại trừ người hút thuốc.
+* **Action 1**: `search_profiles['nữ', 'TP.HCM', 'sách khoa học viễn tưởng', '', 'hút thuốc']`
 * **Observation 1**:
 
 ```json
@@ -91,42 +91,42 @@ Thang diễn giải:
       "profile_id": "USR-001",
       "name": "Linh",
       "age": 24,
-      "gender": "female",
-      "location": "Ho Chi Minh City",
+      "gender": "nữ",
+      "location": "TP.HCM",
       "interests": [
         "leo núi",
-        "đọc sách sci-fi",
+        "sách khoa học viễn tưởng",
         "cà phê cuối tuần",
         "chạy bộ"
       ],
       "mbti": "INTJ",
       "personal_traits": [
-        "early_bird",
-        "dog_lover",
-        "fitness_enthusiast",
-        "non_smoker"
+        "dậy sớm",
+        "yêu chó",
+        "thích vận động",
+        "không hút thuốc"
       ],
       "dealbreakers": [
-        "smokes",
-        "arrogant",
-        "controlling"
+        "hút thuốc",
+        "kiêu ngạo",
+        "kiểm soát"
       ],
       "relationship_goal": "nghiêm túc",
-      "communication_style": "trực tiếp, thích nói chuyện có chiều sâu",
+      "communication_style": "thẳng thắn, sâu sắc, thích trò chuyện có chiều sâu",
       "preferred_date_style": [
         "cà phê yên tĩnh",
-        "đi bộ",
+        "đi dạo",
         "nhà sách"
       ],
       "green_flags": [
         "tôn trọng ranh giới",
         "ham học hỏi",
-        "duy trì thói quen lành mạnh"
+        "lối sống lành mạnh"
       ],
       "red_flags": []
     }
   ],
-  "note": "Kết quả lấy từ mock_data.json."
+  "note": "Kết quả được lấy từ mock_data.json."
 }
 ```
 
@@ -135,4 +135,4 @@ Thang diễn giải:
 
 ### Nhận xét Role 5
 
-ReAct Agent đã đi đúng chuỗi suy luận `Thought -> Action -> Observation -> Final Answer`. Agent gọi tool `search_profiles` để lọc theo giới tính, địa điểm, sở thích và điều kiện loại trừ `smokes`, sau đó dùng Observation để kết luận Linh là ứng viên phù hợp. So với baseline, phản hồi này có căn cứ hơn vì không tự bịa hồ sơ và có kiểm tra dealbreaker quan trọng của người dùng.
+ReAct Agent xử lý đúng yêu cầu chính của người dùng: gọi tool `search_profiles` để tìm nữ ở TP.HCM, có sở thích sách khoa học viễn tưởng và loại trừ điều kiện hút thuốc. Observation trả về `count=1` với hồ sơ Linh, trong đó có trait `không hút thuốc`, sở thích đúng yêu cầu và dữ liệu lấy từ `mock_data.json`, nên Final Answer có căn cứ hơn baseline. Điểm cần cải thiện nhỏ là câu trả lời cuối vẫn dùng nhãn tiếng Anh `sci-fi` và `non_smoker` thay vì đồng bộ hoàn toàn với dữ liệu tiếng Việt trong Observation.
