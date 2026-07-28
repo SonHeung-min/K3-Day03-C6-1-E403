@@ -27,6 +27,6 @@ def rule_based_bot(user_input: str) -> str:
 
 if __name__ == "__main__":
     print("=== DEMO CẤP ĐỘ 1: RULE-BASED CUPID BOT ===")
-    for query in ["Chào bạn", "Gợi ý câu mở đầu", "Linh và Hoàng có hợp nhau không?"]:
+    for query in ["Chào bạn", "Gợi ý câu mở đầu", "An và Linh có hợp nhau không?"]:
         print(f"User: {query}")
         print(f"Bot : {rule_based_bot(query)}\n")
